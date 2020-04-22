@@ -28,17 +28,17 @@
 * `+`表示至少一次 
 
 **示例1：** 
-实现只有`a`和`b`的语言：（假设BNF的注释为`//`，下同）
+实现只有`a`和`b`的语言：
 ```diff
-# // 终结符 "a"
-# // 终结符 "b"
+# 终结符 "a"
+# 终结符 "b"
 
   <Program>::= "a"+ | "b"+
-# // 可实现 aaaaa 或 bbb 的形式
+# 可实现 aaaaa 或 bbb 的形式
 
   <Program>::= <Program> "a"+ | <Program> "b"+  
-# // 递归
-# // 可实现 abababbbbabab 的形式
+# 递归
+# 可实现 abababbbbabab 的形式
 ```
 > BNF最重要的技巧：**可递归**
 
@@ -59,17 +59,17 @@
 
 ```diff
   <Number> ::= "0" | "1" | "2" | ..... | "9"  
-# // 数字
+# 数字
   <DecimalNumber> ::= "0" | (("1" | "2" | ..... | "9") <Number>* ) 
-# // 十进制数
+# 十进制数
 
 - <AdditiveExpression> ::= <DecimalNumber> "+" <DecimalNumber>
-# // 加法
+# 加法
 - <AdditiveExpression> ::= <AdditiveExpression> "+" <DecimalNumber>
-# // 连加（递归）
+# 连加（递归）
 
 + <AdditiveExpression> ::= <DecimalNumber> | <AdditiveExpression> "+" <DecimalNumber> 
-# // 合并了上两步，| 之前的DecimalNumber指单独的一个数也可以是AdditiveExpression的情况
+# 合并了上两步，| 之前的DecimalNumber指单独的一个数也可以是AdditiveExpression的情况
 ```
 
 **示例2.2：** 
@@ -80,17 +80,18 @@
 
 + <MultiplicativeExpression> ::= <Decimalnumber> | 
 +    <MultiplicativeExpression> "*" <Decimalnumber>
-# // 添加乘法表达式
+# 添加乘法表达式
 
 - <AdditiveExpression> ::= <AdditiveExpression> "+" <DecimalNumber> 
 + <AdditiveExpression> ::= <MultiplicativeExpression> | 
 +     <AdditiveExpression> "+" <MultiplicativeExpression>
-# // 举例1 + 2 * 3的逻辑，先右2 * 3，加法可以是由先乘法再相加组合起来，同时由于上一步中 | 前边的定义，说明数字1也算是乘法表达式
+# 举例1 + 2 * 3的逻辑，先右2 * 3，加法可以是由先乘法再相加组合起来，
+# 同时由于上一步中 | 前边的定义，说明数字1也算是乘法表达式
 
 + <LogicalExpression> ::= <AdditiveExpression> | 
 +     <LogicalExpression> "||" <AdditiveExpression> |
 +     <LogicalExpression> "&&" <AdditiveExpression> 
-# // 添加或与逻辑表达式
+# 添加或与逻辑表达式
 ```
 **示例2.3:** 
 第三步：继续添加括号表达式，添加支持减法与除法：
@@ -100,20 +101,20 @@
 
 + <PrimaryExpression> ::= <DecimalNumber> |
 +     "(" <LogicalExpression> ")"
-# // 添加括号表达式，括号优先级高于乘除，可以是数字，也可以是括号内的逻辑LogicalExpression
+# 添加括号表达式，括号优先级高于乘除，可以是数字，也可以是括号内的逻辑LogicalExpression
 
 - <MultiplicativeExpression> ::= <Decimalnumber> | 
 -     <MultiplicativeExpression> "*" <Decimalnumber>
 + <MultiplicativeExpression> ::= <PrimaryExpression> | 
 +     <MultiplicativeExpression> "*" <PrimaryExpression> |
 +     <MultiplicativeExpression> "/" <PrimaryExpression>
-# // 1.把 Decimalnumber 替换为 PrimaryExpression ，因为括号 primaryExpression 优先级高于乘除 MultiplicativeExpression
-# // 2.添加除法表达式
+# 1.把 Decimalnumber 替换为 PrimaryExpression ，因为括号 primaryExpression 优先级高于乘除 MultiplicativeExpression
+# 2.添加除法表达式
 
   <AdditiveExpression> ::= <MultiplicativeExpression> | 
       <AdditiveExpression> "+" <MultiplicativeExpression> |
 +     <AdditiveExpression> "-" <MultiplicativeExpression>
-# // 添加减法
+# 添加减法
 
   <LogicalExpression> ::= <AdditiveExpression> | 
      <LogicalExpression> "||" <AdditiveExpression> |
@@ -141,12 +142,12 @@
     get : 1
 }
 ```
-**问题2：** 右结合星星哪种文法？答案<sup id="a4">[[4]](#f4)</sup> 
+**问题2：** 下列右结合星星哪种文法？答案<sup id="a4">[[4]](#f4)</sup>  
 `2**1**2`
 
-> Exponentiation : 
+> Exponentiation :  
 &emsp;&emsp;UnaryExpression  
-&emsp;&emsp;UpdateExpression **\*\*** Exponentiation  
+&emsp;&emsp;UpdateExpression <strong style="font-weight:bold;">\*\*</strong> Exponentiation  
 &nbsp;  
 *—— 引自ECMA-262 v10文档*
 
@@ -161,11 +162,11 @@
 
 > AdditiveExpression :  
 &emsp;&emsp;MultiplicativeExpression  
-&emsp;&emsp;AdditiveExpression  **+**  MultiplicativeExpression  
-&emsp;&emsp;AdditiveExpression  **-**  MultiplicativeExpression  
+&emsp;&emsp;AdditiveExpression  <strong style="font-weight:bold;">+</strong>  MultiplicativeExpression  
+&emsp;&emsp;AdditiveExpression  <strong style="font-weight:bold;">-</strong>  MultiplicativeExpression  
 
 
-* *Javascript 属于这种自定义的产生式，* `:` *相当于BNF中的* `::=` *，每一行折行来表示BNF中的* `|` *，用加粗表示终结符，如* **\+** 、 **\-** 
+* *Javascript 属于这种自定义的产生式，* `:` *相当于BNF中的* `::=` *，每一行折行来表示BNF中的* `|` *，用加粗表示终结符，如* <strong style="font-weight:bold;">+</strong> 、 <strong style="font-weight:bold;">-</strong>
 * *ECMA文档 Grammar Summary 部分是较关键的部分*
 * *通过实例理解会遗漏边边角角，读产生式语法标准则会有较好的完备性*
 
