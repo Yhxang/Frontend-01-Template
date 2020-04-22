@@ -1,7 +1,9 @@
 ## 词法、类型
 
+电梯：[week02 class01 笔记](./NOTE1.md)
+
 ### Unicode
-`A`的码点是65，`a`是97，最初的字符集ASCII，共128个，现存的字符集都兼容ASCII，码点得以保留。
+`A`的码点是65，`a`是97，最初的字符集ASCII，共128个，现存的字符集都兼容ASCII，码点得以保留。  
 
 ```javascript
 for(let i=0; i<128; i++){
@@ -15,11 +17,11 @@ for(let i=0; i<128; i++){
 
 var \u5389\u5bb3 = 1; //这就是厉害两个字的变量名
 ```
-`unicode`是支持最广的字符集，包含了各国字符。
+`unicode`是支持最广的字符集，包含了各国字符。  
 `unicode`参考：[比官网更严肃点的字符集网站](https://www.fileformat.info/info/unicode/)
 
 #### [Block](https://www.fileformat.info/info/unicode/block/index.htm)
-`CJK`（Chinese Japanese Korean）区域是常用的中文字符区。
+`CJK`（Chinese Japanese Korean）区域是常用的中文字符区。  
 
 `BMP`（基本字符平面）指四位`U+0000`至`U+FFFF`的内容，兼容性较好，在JavaScript中`String.fromCharCode`和`String.prototype.charCodeAt`只能支持此范围，超出此范围的字符用`String.fromCodePoint`和`String.prototype.codePointAt`。
 ```javascript
@@ -55,14 +57,17 @@ InputElement
 |`<NBSP>`|`U+00A0`||`&#160;`|`&#xa0;`|`&nbsp;`|no-break space，不折行|
 |`<ZWNBSP>`|`U+00A0`||`&#65279;`|`&#xfeff;`||[zero width no-break space](https://www.fileformat.info/info/unicode/char/feff/index.htm)，BOM|
 |`<USP>`|`U+FEFF`|||||[其他空格](https://www.fileformat.info/info/unicode/category/Zs/list.htm)|
-*技巧：在console打印 `\u00A0` 输出的空格，复制到html文档里，可起到`&nbsp;`的作用*
+
+*技巧：在console打印 `\u00A0` 输出的空格，复制到html文档里，可起到`&nbsp;`的作用*  
+
 #### LineTerminator
 |缩写 | unicode | 转义 |HTML Entity (decimal)|HTML Entity (hex)|HTML Entity (named)| 说明|
 | -- | -- | -- | -- | -- | -- | -- |
 |`<LF>`|`U+000A`|`\n`|`&#10;`|`&#xa;`| -- | **Line Feed** 尽量使用`<LF>`不用`<CR>`|
 |`<CR>`|`U+000D`|`\r`|`&#13;`|`&#xd;`| -- | Carriage Return 回车 |
 |`<LS>`/`<PS>`|-- | -- | -- | -- | -- | 不要用，超出unicode范围|
-*虽然 JavaScript 规定支持 `unicode` ，但实际上 `BMP` 范围外支持不好*
+
+*虽然 JavaScript 规定支持 `unicode` ，但实际上 `BMP` 范围外支持不好* 
 
 > 关于“回车”（carriage return）和“换行”（line feed）这两个概念的来历和区别。
 在计算机还没有出现之前，有一种叫做电传打字机（Teletype Model 33）的玩意，每秒钟可以打10个字符。但是它有一个问题，就是打完一行换行的时候，要用去0.2秒，正好可以打两个字符。要是在这0.2秒里面，又有新的字符传过来，那么这个字符将丢失。
@@ -163,7 +168,7 @@ Math.abs(0.1 + 0.2 - 0.3) <= Number.EPSILON
 |UTF8|占2字节/8比特位<br>`'a'` --> `01100001`|占3字节，24比特位（1110开头是控制位）<br>`'一'` --> ==1110==**0100** ==10==**111000** ==10==**000000**|
 |UTF16|占4字节/16比特位（0补位）<br>`'a'` --> `00000000 01100001`|占4字节/16比特位<br>`'一'` --> **0100110 00000000**|
 
-**最佳实践**：若存储字符以ASCII为主，可存储为UTF8，如果中文拉丁文西文为主等，最好存储为UTF16，甚至UTF32。
+**最佳实践**：若存储字符以ASCII为主，可存储为UTF8，如果中文拉丁文西文为主等，最好存储为UTF16，甚至UTF32。  
 JavaScript是UTF16在内存存储，不承认BMP外的字符，因此`charCode`系列性能高于`codePoint`系列。
 
 **作业2：**
