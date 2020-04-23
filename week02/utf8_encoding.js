@@ -13,7 +13,7 @@ function UTF8_Encoding(string){
         }else if(cp <= 0x10FFFF){
             bits = cp.toString(2).padStart(21,'0').replace(/(\d{3})(\d{6})(\d{6})(\d{6})/,'11110$110$210$310$4');
         }else{
-            throw Error('超出转码范围')
+            throw Error('超出转码范围');
         }
         result += parseInt(bits,2).toString(16).match(/[0-9a-fA-F]{2}/g).map(e => '\\x' + e.toUpperCase()).join('');
     } 

@@ -18,7 +18,7 @@ for(let i=0; i<128; i++){
 var \u5389\u5bb3 = 1; //这就是厉害两个字的变量名
 ```
 `unicode`是支持最广的字符集，包含了各国字符。  
-`unicode`参考：[比官网更严肃点的字符集网站](https://www.fileformat.info/info/unicode/)
+`unicode`参考：[比官网更严肃的字符集网站](https://www.fileformat.info/info/unicode/)
 
 #### [Block](https://www.fileformat.info/info/unicode/block/index.htm)
 `CJK`（Chinese Japanese Korean）区域是常用的中文字符区。  
@@ -50,22 +50,23 @@ InputElement
 #### WhiteSpace
 |缩写 | unicode | 转义 |HTML Entity (decimal)|HTML Entity (hex)|HTML Entity (named)| 说明|
 | -- | -- | -- | -- | -- | -- | -- |
-|`<TAB>`|`U+0009`|`\t`|`&#9;`|`&#x9;`|| **制表符**，除了空格最常用|
-|`<VT>`|`U+0011`|`\v`|`&#17;`|`&#x11;`|| 纵向制表符，基本已无排版支持 |
-|`<FF>`|`U+000C`|`\f`|`&#12;`|`&#xc;`||form feed|
-|`<SP>`|`U+0020`||`&#32;`|`&#x20;`||**space**|
-|`<NBSP>`|`U+00A0`||`&#160;`|`&#xa0;`|`&nbsp;`|no-break space，不折行|
-|`<ZWNBSP>`|`U+00A0`||`&#65279;`|`&#xfeff;`||[zero width no-break space](https://www.fileformat.info/info/unicode/char/feff/index.htm)，BOM|
-|`<USP>`|`U+FEFF`|||||[其他空格](https://www.fileformat.info/info/unicode/category/Zs/list.htm)|
+|`<TAB>`|`U+0009`|`\t`|`&#9;`|`&#x9;`|--| **制表符**<br>*除了空格最常用*|
+|`<VT>`|`U+0011`|`\v`|`&#17;`|`&#x11;`|--| 纵向制表符<br>*基本已无排版支持*|
+|`<FF>`|`U+000C`|`\f`|`&#12;`|`&#xc;`|--|form feed|
+|`<SP>`|`U+0020`|--|`&#32;`|`&#x20;`|--|**space**|
+|`<NBSP>`|`U+00A0`|--|`&#160;`|`&#xa0;`|`&nbsp;`|no-break space<br>*不折行*|
+|`<ZWNBSP>`|`U+FEFF`|--|`&#65279;`|`&#xfeff;`|--|[zero width no-break space](https://www.fileformat.info/info/unicode/char/feff/index.htm)<br>*常用作 BOM*|
+|`<USP>`|--|--|--|--|--|[其他空格](https://www.fileformat.info/info/unicode/category/Zs/list.htm)|
 
 *技巧：在console打印 `\u00A0` 输出的空格，复制到html文档里，可起到`&nbsp;`的作用*  
 
 #### LineTerminator
 |缩写 | unicode | 转义 |HTML Entity (decimal)|HTML Entity (hex)|HTML Entity (named)| 说明|
 | -- | -- | -- | -- | -- | -- | -- |
-|`<LF>`|`U+000A`|`\n`|`&#10;`|`&#xa;`| -- | **Line Feed** 尽量使用`<LF>`不用`<CR>`|
-|`<CR>`|`U+000D`|`\r`|`&#13;`|`&#xd;`| -- | Carriage Return 回车 |
-|`<LS>`/`<PS>`|-- | -- | -- | -- | -- | 不要用，超出unicode范围|
+|`<LF>`|`U+000A`|`\n`|`&#10;`|`&#xa;`| -- | **Line Feed**<br>*换行，尽量使用* `<LF>` *不用* `<CR>`|
+|`<CR>`|`U+000D`|`\r`|`&#13;`|`&#xd;`| -- | Carriage Return<br>*回车* |
+|`<LS>`|`U+2028`| -- | `&#8232;` |`&#x2028`| -- | Line Separator<br>*不建议用，超出BMP范围*|
+|`<PS>`|`U+2029`| -- | `&#8233` |`&#x2029`| -- | Paragraph Separator<br>*不建议用，超出BMP范围*|
 
 *虽然 JavaScript 规定支持 `unicode` ，但实际上 `BMP` 范围外支持不好* 
 
@@ -163,15 +164,17 @@ Math.abs(0.1 + 0.2 - 0.3) <= Number.EPSILON
 ##### String——Encoding
 * UTF
 
-|编码|存储ASCII字符|存储中文|
-|--| -- | -- |
-|UTF8|占1字节/8比特位<br>`'a'` --> `01100001`|占3字节，24比特位<br>`'一'` --> <code>1110**0100** 10**111000** 10**000000**</code><br>1110开头是控制位，粗体是实际编码位|
-|UTF16|占2字节/16比特位（0补位）<br>`'a'` --> `00000000 01100001`|占2字节/16比特位<br>`'一'` --> `0100110 00000000`|
-
 **UTF-8 与 Unicode 的关系是，UTF-8 是 Unicode 的实现方式之一**
 
+|编码|存储ASCII字符|存储中文|
+|--| -- | -- |
+|UTF8|占1字节/8比特位<br>`'a'` --> `01100001`|占3字节，24比特位<br>`'一'` --> <code>1110**0100** 10**111000** 10**000000**</code><br>第一个字节开头的`1110`和后续字节开头的`10`是控制位，粗体是实际编码位，详细UTF8与Unicode转换编码原理参考[字符编码笔记：ASCII，Unicode和UTF-8——阮一峰](http://www.ruanyifeng.com/blog/2007/10/ascii_unicode_and_utf-8.html)|
+|UTF16|占2字节/16比特位（0补位）<br>`'a'` --> `00000000 01100001`|占2字节/16比特位<br>`'一'` --> `0100110 00000000`|
+
+
+
 **最佳实践**：若存储字符以ASCII为主，可存储为UTF8，如果中文拉丁文西文为主等，最好存储为UTF16，甚至UTF32。  
-JavaScript是UTF16在内存存储，不承认BMP外的字符，因此`charCode`系列性能高于`codePoint`系列。
+JavaScript是UTF16在内存存储，不承认BMP外的字符，因此`charCode`系列性能高于`codePoint`系列。  
 
 **作业2：**
 ```javascript
@@ -211,7 +214,7 @@ a
 ```
 
 ### 答疑
-* unicode转GBK：无捷径，硬编码，写对应表。
+* unicode转GBK：无捷径，硬编码，写对应表。JS文件如果是GBK编码，大部分浏览器会转为unicode。
 * 面试技巧：学vue还是react无所谓，要有核心竞争优势，只要有一项打动面试官就成了。
 * HTML5没有DTD是为了彻底与SGML割裂，且DTD从来没有被浏览器解析过。HTML4只是设计上和SGML有继承关系，代码没有继承关系，且HTML4也不是SGML引擎解析的。
 * 疑问未解：` 1.3 + 1.1 - 2.4 <= Number.EPSILON ` 返回 `false`
@@ -220,7 +223,6 @@ a
 * 较重要的课：操作系统、计算机网络、算法数据结构
 * 大部分的晋升靠做工程体系晋升，只有一块技能会限制发展。做内部系统时，并非代码写出来就好，学会包装对晋升很重要。
 * 开源项目：写文档，改bug，写需求，一步一步来。选择参与开源项目的方法：越出名的越好，但并非越出名的项目需要的能力越强，需要大量的人改文档、写例子、看issue、分类，没有一个开源项目是人员充足的。
-* JS如果是GBK编码，大部分浏览器会转为unicode
 
 
 [//]: # (名词查询：微任务、宏任务)
