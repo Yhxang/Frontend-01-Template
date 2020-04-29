@@ -1,20 +1,3 @@
-function charIndexMap (char){
-    if(/\d/.test(char)){
-        return char.codePointAt(0) - '0'.codePointAt(0);
-    }else if(/[a-zA-Z]/.test(char)){
-        return char.toLowerCase().codePointAt(0) - 'a'.toLowerCase().codePointAt(0) + 10;
-    }else{
-        throw Error("错误的数字字符");
-    }
-}
-
-function charIndexMapRev(index){
-    if(index <= 9){
-        return String.fromCodePoint(index + '0'.codePointAt(0));
-    }else{
-        return String.fromCodePoint(index - 10 + 'a'.codePointAt(0));
-    }
-}
 function convertStringToNumber(string, x){
     if(arguments.length < 2){
         x = 10;
@@ -51,6 +34,26 @@ function convertStringToNumber(string, x){
     number *= Sign;
     return number;
 }
+function charIndexMap (char){
+    if(/\d/.test(char)){
+        return char.codePointAt(0) - '0'.codePointAt(0);
+    }else if(/[a-zA-Z]/.test(char)){
+        return char.toLowerCase().codePointAt(0) - 'a'.toLowerCase().codePointAt(0) + 10;
+    }else{
+        throw Error("错误的数字字符");
+    }
+}
+
+function assert1(number, string, radix){
+    if (typeof radix !== 'undefined'){
+        let result = convertStringToNumber(string, radix);
+        console.assert(number === result, `${number} !== convertStringToNumber("${string}", ${radix}),${result}`);
+    }else{
+        let result = convertStringToNumber(string);
+        console.assert(number === convertStringToNumber(string), `${number} !== convertStringToNumber("${string}"),${result}`);
+    }
+}
+
 assert1(0, '0');
 assert1(0, '+0');
 assert1(0, '-0');
@@ -70,34 +73,9 @@ assert1(120, '170', 8); // 八进制
 assert1(6, '110', 2); // 二进制
 assert1(-1234.56, '-1.23456e3'); //精度出现问题
 
-function assert1(number, string, radix){
-    if (typeof radix !== 'undefined'){
-        let result = convertStringToNumber(string, radix);
-        console.assert(number === result, `${number} !== convertStringToNumber("${string}", ${radix}),${result}`);
-    }else{
-        let result = convertStringToNumber(string);
-        console.assert(number === convertStringToNumber(string), `${number} !== convertStringToNumber("${string}"),${result}`);
-    }
-}
-
-
-function convertNumberToString(number, x){
-    var integer = Math.floor(number);
-    var fraction = number - integer;
-    var string = '';
-    while(integer > 0){
-        string += String(integer % x) + string; //拿到数字最后一位
-        integer = Math.floor(integer / x);
-    }
-    return string;
-} 
-convertNumberToString(12345,10);
-
-
-
-
 
 /*
+
 Number与直接量写法不一致：
 010 //output: 8
 Number('010') //output: 10
@@ -117,6 +95,7 @@ parseInt无法区分是功能字符还是十六进制的合法数字，所以par
 */
 
 
+// 以下为用正则表达式表达ECMA262中的StringNumericLiteral类型
 
 /*
 StringNumericLiteral :::
