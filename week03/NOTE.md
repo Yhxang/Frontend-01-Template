@@ -1,4 +1,4 @@
-## JavaScript | 表达式，类型转换
+## JavaScript | 表达式 Expression，类型转换
 [TOC]
 * Atom
 * Expression
