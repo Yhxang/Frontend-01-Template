@@ -1,5 +1,6 @@
 ## JavaScript | 语句 Statement，对象
----
+电梯：[week03 class01 笔记](./NOTE.md)
+
 ### Grammar
 * 简单语句
 * 组合语句
@@ -222,7 +223,8 @@ class Human{
 > 这些是面向对象编程的入门知识，如果不遵循，设计出的代码很可能是混乱的，享受不到面向对象的好处，只会带来麻烦。如果不会面向对象，直接用面向过程，也可以写出好代码
 #### Object in Javascript
 在JavaScript运行时，原生对象的描述方式非常简单，我们只需关心原型和属性两个部分。（原型不是属性，属性属于运行时）
-![原生对象](objectinjs.png)
+![原生对象](objectinjs.png)  
+
 属性是键值对，键有Symbol/String，值有Data数据属性和Accessor访问器属性。
 * Data Property数据属性：*（有四个Attribute特征值）*
     * [\[value]]

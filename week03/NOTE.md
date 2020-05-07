@@ -1,11 +1,7 @@
 ## JavaScript | 表达式 Expression，类型转换
-[TOC]
-* Atom
-* Expression
-* Statement
-* Structure
-* Program/Module
+电梯：[week03 class02 笔记](./NOTE2.md)
 
+[TOC]
 ### Grammar
 
 #### Tree vs Priority
