@@ -44,7 +44,7 @@ Object.getOwnPropertyDescriptor(new Array(), 'length');
 
 ### 其他不可实现的对象：
 #### 1. Bound Function Exotic Objects
-Bound Function Exotic Objects 是 Function.prototype.bind()函数创建的绑定函数（bound function，BF），它包装了原函数对象。调用绑定函数通常会执行包装函数。
+Bound Function Exotic Objects 是 Function.prototype.bind()函数创建的绑定函数（bound function，BF），它包装了原函数对象。调用绑定函数通常会执行包装函数。  
 绑定函数具有以下内部属性：
 * `[[BoundTargetFunction]]` - 包装的函数对象
 * `[[BoundThis]]` - 在调用包装函数是始终作为this值传递的值。
@@ -55,12 +55,12 @@ Bound Function Exotic Objects 是 Function.prototype.bind()函数创建的绑定
 见上文
 
 #### 3. String Exotic Objects
-字符串特异对象，封装了一个字符串值，并实现了下标取String的片段，拥有一个length属性，即字符串里的元素数量，length属性不可写也不可配置。
+字符串特异对象，封装了一个字符串值，并实现了下标取String的片段，拥有一个length属性，即字符串里的元素数量，length属性不可写也不可配置。  
 特殊内部插槽：
 * `[[StringData]]`
 
 #### 4. Argument Exotic Objects
-参数对象的array index属性映射到函数的各个参数上
+参数对象的array index属性映射到函数的各个参数上  
 特殊内部插槽：
 * `[[ParameterMap]]`
 #### 5. Integer-Indexed Exotic Objects
