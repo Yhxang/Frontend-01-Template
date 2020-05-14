@@ -20,7 +20,7 @@
 JS Context是一般JS引擎包含的最大粒度的东西，比宏任务粒度要大，JS Context对应着一个Global Object，多个宏任务共享一个全局对象，多个宏任务定义的变量、访问的内置对象相通。  
 JS Context里最重要的Realm，Realm有一套完整的内置对象。  
   
-使用深度优先搜索，在全局对象的属性中查找JavaScript中所有固有对象：  
+使用广度优先，查找JavaScript中所有固有对象：  
 ```javascript
 var set = new Set();
 var globalProperties = ["eval", "isFinite", "isNaN", "parseFloat", "parseInt", "decodeURI", "decodeURIComponent", "encodeURI", "encodeURIComponent", "Object", "Function", "Boolean", "Symbol", "Error", "EvalError", "RangeError", "ReferenceError", "SyntaxError", "TypeError", "URIError", "Number", "BigInt", "Math", "Date", "String", "RegExp", "Array", "Int8Array", "Uint8Array", "Uint8ClampedArray", "Int16Array", "Uint16Array", "Int32Array", "Uint32Array", "Float32Array", "Float64Array", "BigInt64Array", "BigUint64Array", "Map", "Set", "WeakMap", "WeakSet", "ArrayBuffer", "SharedArrayBuffer", "Atomics", "DataView", "JSON", "Promise", "Reflect", "Proxy", "Intl", "WebAssembly"]
