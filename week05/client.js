@@ -169,7 +169,7 @@ class TrunkedResponseParser{
         this.current = this.WAITING_LENGTH;
     }
     receiveChar(char){
-        //console.log(JSON.stringify(char)) //可以打印出\n \r字符
+        console.log(JSON.stringify(char)) //可以打印出\n \r字符
         if(this.current === this.WAITING_LENGTH){
             if(char === '\r'){
                 if(this.length === 0){
@@ -177,8 +177,8 @@ class TrunkedResponseParser{
                 }
                 this.current = this.WAITING_LENGTH_LINE_END;
             }else{
-                this.length *= 10;
-                this.length += char.charCodeAt(0) - '0'.charCodeAt(0);
+                this.length *= 16;  // chunked的length是十六进制
+                this.length += parseInt(char, 16);
             }   
         }else if(this.current === this.WAITING_LENGTH_LINE_END){
             if(char === '\n'){
