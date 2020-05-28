@@ -31,7 +31,7 @@ function match(element, selector){
         if(attr && attr.value === selector.replace("#", ''))
             return true;
     }else if(selector.charAt(0) == "."){
-        var attr = element.attributes.filter(attr, attr.name === "class")[0];
+        var attr = element.attributes.filter(attr => attr.name === "class")[0];
         if(attr && attr.value === selector.replace(".", ''))
             return true;
         // TODO: <div class="cls1 cls2"> 匹配多个class的情况（遍历for）
