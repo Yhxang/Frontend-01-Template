@@ -50,3 +50,44 @@
 
 ## 知识补漏
 * 如果item主轴之和大于外壳宽度，有flex属性的宽度会变成零
+
+---
+
+# 重学CSS
+
+[CSS 2.1](https://www.w3.org/TR/2011/REC-CSS2-20110607/) 是对css2.1的完整描述，CSS3之后才分了标准。
+
+## CSS总体结构
+* @charset (过时)
+* @import
+* rules
+  * @media
+  * @page
+  * rule
+
+CSS产生式说明：  
+* CDO `<!--`  
+* CDC `-->`  
+
+上边两个是为了解决历史问题（有些不支持style标签内的内容，这两个让这种浏览器不把css文本显示到浏览器上）
+
+## CSS @规则的研究
+[MDN CSS at rule](https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule)
+
+## CSS 规则
+* Selector
+  * https://w3.org/TR/selectors-3/
+* Key
+  * Property
+  * [Variable](https://w3.org/TR/css-variables)
+* Value
+  * https://www.w3.org/TR/css-values-4/
+
+
+## CSS 脑图
+
+![](CSS-xmind.png)
+
+
+## 知识补漏
+* svg中的a，要用@namespace选择

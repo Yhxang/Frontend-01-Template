@@ -134,7 +134,7 @@ function layout(element){
 
         if(itemStyle.flex){
             flexLine.push(item); // 如果有flex属性，表示元素可伸缩，这时无论如何都能放进一行，直接push进去
-        }else if(style.flexWrap === "nowrap" && isAutoMainSize){
+        }else if(style.flexWrap === "nowrap" || isAutoMainSize){
             // 如果样式为不折行
             mainSpace -= itemStyle[mainSize];
             if(itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0))
