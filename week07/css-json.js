@@ -9,4 +9,4 @@ for(let li of lis){
     })
     
 }
-console.log(JSON.stringify(result, null, "    "));
+console.log(JSON.stringify(result, null, "    ")); 
