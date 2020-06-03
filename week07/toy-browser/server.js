@@ -6,7 +6,9 @@ const server = http.createServer((req,res) => {
     console.log(req.headers);
     res.setHeader('Content-Type','text/html');
     res.setHeader('X-Foo', 'bar');
-    //res.writeHead(200, {'Content-Type' : 'text/plain'});
+    res.writeHead(200, {'Content-Type' : 'text/html'}); 
+    // 如果没这句Response就会没有Transfer-Encoding：chunked
+    // 但如果text/html改为text/plain，后面用浏览器打开时看到的就是文字，而不是html页面
 //     res.end(
 // `<html maaa=a >
 // <head>
@@ -55,8 +57,7 @@ const server = http.createServer((req,res) => {
         <div class="c1"></div>
     </div>
 </body>
-</html>
-`);
+</html>`);
 })
 
 server.listen(8080);
