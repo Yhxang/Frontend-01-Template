@@ -82,7 +82,8 @@ match("div #id.class", document.getElementById("id"));
 
 |源代码|语义|表现|
 |--|--|--|
-|标签（Tag）|元素（Element）|盒（Box）|
+|标签（Tag）|元素（Element）|盒（Box）|  
+  
 HTML代码中可以书写开始<u>标签</u>，结束<u>标签</u>，和自封闭<u>标签</u>。  
 一对起止<u>标签</u>，表示一个<u>元素</u>。  
 DOM树种存储的是<u>元素</u>和其他类型的节点（Node）。  
