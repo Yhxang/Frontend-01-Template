@@ -27,22 +27,42 @@ function addCSSRules(text){
 function match(element, selector){
     if(!selector || !element.attributes)
         return false;
-    // TODO：实现复合选择器
-    if(selector.charAt(0) == "#"){
-        var attr = element.attributes.filter(attr => attr.name === "id")[0];
-        if(attr && attr.value === selector.replace("#", ''))
-            return true;
-    }else if(selector.charAt(0) == "."){
-        var attr = element.attributes.filter(attr => attr.name === "class")[0];
-        if(attr && attr.value === selector.replace(".", ''))
-            return true;
-        // TODO: <div class="cls1 cls2"> 匹配多个class的情况（遍历for）
-    }else{
-        if(element.tagName === selector){
-            return true;
+    // 实现复合选择器：
+    // 复合选择器是 div#id.cls1.cls2 的形式
+    // 1.   拆分复合选择器为简单选择器数组 ['div', '#id', '.cls1', '.cls2']
+    let compounds = selector.split(/(?=[\#\.])/g); // 把复合选择器拆分为简单选择器数组
+
+    // 2.   遍历这个简单选择器数组，寻找匹配当前元素必须匹配简单选择器数组的每一项，否则复合选择器匹配失败。
+    for(let sel of compounds){
+        // 寻找复合选择器中的简单选择器必须匹配
+        if(sel.charAt(0) == "#"){
+            let attr = element.attributes.filter(attr => attr.name === "id")[0];
+            // 2.1  若有 id ，则必须完全匹配，否则整个复合选择器匹配失败，返回false。
+            if(!(attr && attr.value === sel.replace("#", '')))
+                return false; 
+        }else if(sel.charAt(0) == "."){
+            let attr = element.attributes.filter(attr => attr.name === "class")[0];
+            // 2.2  若有class， 则元素的class列表中，至少匹配一个，否则整个复合选择器匹配失败。
+            //      class是列表，所以需要遍历查找。
+            let classFound = false;
+            if(attr && attr.value){
+                let attrs = attr.value.split(/\s+/g);
+                for(let singleAttr of attrs){
+                    if(singleAttr === sel.replace(".", '')){
+                        classFound = true;
+                        break;
+                    }
+                }
+            }
+            if(!classFound)
+                return false;
+        }else{
+            // 2.3  若有tag， 则也必须完全匹配，否则整个复合选择器匹配失败，返回false。
+            if(element.tagName !== sel)
+                return false;
         }
     }
-    return false;
+    return true; // 若全部通过，则匹配复合选择器成功。
 }
 
 function specificity(selector){

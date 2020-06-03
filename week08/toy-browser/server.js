@@ -49,12 +49,26 @@ const server = http.createServer((req,res) => {
     flex:1;
     background-color:rgb(0,255,0);
 }
+#myid2.c2{
+    flex: 1;
+    width: 100px;
+    height: 100px;
+    background-color:rgb(0,0,255)
+}
+.c4{
+    flex:1;
+    width: 50px;
+    height: 50px;
+    background-color:rgb(255,0,0)
+}
     </style>
 </head>
 <body>
     <div id="container">
         <div id="myid"></div>
         <div class="c1"></div>
+        <div id="myid2" class="c2"></div>
+        <div class="c3 c4"></div>
     </div>
 </body>
 </html>`);
