@@ -39,23 +39,52 @@ function matchByAttrib(element, selector){
 }
 
 function matchBySimpleSelector(element, selector){
-    if(selector.startsWith("#")){
+    if(selector.startsWith("#")){  // ID selectors
         return matchById(element, selector);
-    }else if(selector.startsWith(".")){
+    }else if(selector.startsWith(".")){ // Class selectors
         return matchByClass(element, selector);
-    }else if(/^\[.+?\]$/.test(selector)){
+    }else if(/^\[.+?\]$/.test(selector)){ // Attribute selectors
         return matchByAttrib(element, selector);
+    }else if(/:not\((\S+)\)/.test(selector)){ // negation pseudo-class
+        return !matchBySimpleSelector(element, RegExp.$1);
     }else{
         return matchByTag(element, selector);
     }
     //TODO： 2.not 3.where has
 }
 function matchByCompoundSelector(element, selector){
-    let compounds = selector.split(/(?=[\#\.\[])/g);
-
+    // 'div#id.cls[attr]:not(#id)' --> ['#id', '.cls', '[attr]', ':not(#id)']
+    let compounds = selector.split(/(?<!\([^\)]*?)(?=[#\.\[:])/g); // 查找后方是 #.[: 符号中的其中一种且前方不是左括号 的位置并分割开。
     return compounds.every((simpleSelector) => matchBySimpleSelector(element, simpleSelector));
 }
 
+function getNextElementKey(combinator) {
+    return {
+      '>': 'parentElement',
+      ' ': 'parentElement',
+      '+': 'previousElementSibling',
+      '~': 'previousElementSibling',
+    }[combinator]
+}
+
+function findMatchedElement(element, selectorPart){
+    const [selector, combinator] = selectorPart.split(/(?<=[ ~+>])/)
+    const nextElementKey = getNextElementKey(combinator);
+
+    if (/^[>+]$/.test(combinator)) {  // Child combinator OR Next-sibling combinator
+        element = element[nextElementKey]
+        if (!matchByCompoundSelector(element, selector)) {
+          element = null
+        }
+      } else if (/^[ ~]$/.test(combinator)) {  // Descendant combinator OR Subsequent-sibling combinator
+        do {
+          element = element[nextElementKey]
+        } while (element && !matchByCompoundSelector(element, selector))
+      } else if (!matchByCompoundSelector(element, selector)) { // 唯一没有combinator的当前元素
+        element = null
+      }
+      return element || null
+}
 // function matchBySelector(element, selector){
 //     // TODO: 后代 ~ + > 
 // }
@@ -65,10 +94,11 @@ function matchByCompoundSelector(element, selector){
 //     // matchBySelector(element, selector)
 // }
 
-function match(element, selector){
+function match(element, rule){
     //let rule = {selectors: ['body  #form > .form-title  ~ label +  [role]']}
-    // let selectorParts =  rule.selectors[0].trim().replace(/(?<=[+>~])\s+/g,'').replace(/\s+(?=[ +>~])/g,'').split(/(?<=[ +>~])/g);
-
-    //return matchByCompoundSelector(element, selectorParts);
-    return matchByCompoundSelector(element, selector);
+    const selectorParts = rule.trim().replace(/(?<=[~+>])\s+/g, '').replace(/\s+(?=[ ~+>])/g, '').split(/(?<=[ ~+>])/g)
+    while (element && selectorParts.length) {
+        element = findMatchedElement(element, selectorParts.pop())
+    }
+    return !!element
 }
