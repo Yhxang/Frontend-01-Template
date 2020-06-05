@@ -25,7 +25,7 @@ function matchByAttrib(element, selector){
     if(!matched)
         return false;
     
-    const [, selectorAttribName, selectorEqualType, selectorAttribValue] = matched;
+    let [, selectorAttribName, selectorEqualType, selectorAttribValue] = matched;
     if(!element.hasAttribute(selectorAttribName)) // dom Function
         return false;
     
@@ -52,11 +52,8 @@ function matchBySimpleSelector(element, selector){
 }
 function matchByCompoundSelector(element, selector){
     let compounds = selector.split(/(?=[\#\.\[])/g);
-    for(let simpleSelector of compounds){  //TODO：Array.prototype.every
-        if(!matchBySimpleSelector(element, simpleSelector))
-            return false;
-    }
-    return true;
+
+    return compounds.every((simpleSelector) => matchBySimpleSelector(element, simpleSelector));
 }
 
 // function matchBySelector(element, selector){
@@ -72,5 +69,6 @@ function match(element, selector){
     //let rule = {selectors: ['body  #form > .form-title  ~ label +  [role]']}
     // let selectorParts =  rule.selectors[0].trim().replace(/(?<=[+>~])\s+/g,'').replace(/\s+(?=[ +>~])/g,'').split(/(?<=[ +>~])/g);
 
-    return matchByCompoundSelector(element, selectorParts);
+    //return matchByCompoundSelector(element, selectorParts);
+    return matchByCompoundSelector(element, selector);
 }
