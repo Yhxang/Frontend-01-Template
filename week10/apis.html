@@ -59,9 +59,11 @@ names = names.filter(e => e != "Intl")
 
 names = filterOut(names, ["WebGLVertexArrayObject", "WebGLUniformLocation", "WebGLTransformFeedback", "WebGLTexture", "WebGLSync", "WebGLShaderPrecisionFormat", "WebGLShader", "WebGLSampler", "WebGLRenderingContext", "WebGLRenderbuffer", "WebGLQuery", "WebGLProgram", "WebGLFramebuffer", "WebGLContextEvent", "WebGLBuffer", "WebGLActiveInfo", "WebGL2RenderingContext"]);
 
-//https://www.w3.org/TR/webaudio/
+// Web Audio API
+// 处理和合成音频的高级Web API
+// https://www.w3.org/TR/webaudio/
 
-names = filterOut(names, ["BaseAudioContext", "AudioContext", "OfflineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "AudioBufferSourceNode", "AudioDestinationNode", "AudioListener", "AudioProcessingEvent", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioDestinationNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "OscillatorNode", "PannerNode", "PeriodicWave", "ScriptProcessorNode", "StereoPannerNode", "WaveShaperNode", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor"]);
+names = filterOut(names, ["BaseAudioContext", "AudioContext", "OfflineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "AudioBufferSourceNode", "AudioDestinationNode", "AudioListener", "AudioProcessingEvent", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioDestinationNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "OscillatorNode", "PannerNode", "PeriodicWave", "ScriptProcessorNode", "StereoPannerNode", "WaveShaperNode", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor", "OfflineAudioCompletionEvent"]);
 
 //https://encoding.spec.whatwg.org/#dom-textencoder
 
@@ -91,15 +93,32 @@ names = filterOut(names, ["ScreenOrientation"]);
 //https://url.spec.whatwg.org/
 names = filterOut(names, ["URL", "URLSearchParams"]);
 
-// https://xhr.spec.whatwg.org/  XMLHttpRequest
+// XMLHttpRequest
+// https://xhr.spec.whatwg.org/  
 names = filterOut(names, ["XMLHttpRequest", "FormData", "ProgressEvent"]);
 
-// https://w3c.github.io/media-source/
+// Media Source Extensions
+// https://www.w3.org/TR/2016/REC-media-source-20161117/
 names = filterOut(names, ["MediaSource", "SourceBuffer", "SourceBufferList"]);
 
-// https://w3c.github.io/webrtc-pc/   //Real-time Communication Between Browsers
+//Real-time Communication Between Browsers
+// https://w3c.github.io/webrtc-pc/   
 names = filterOut(names, ["RTCSessionDescription", "RTCIceCandidate", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent", "RTCCertificate", "RTCRtpSender", "RTCRtpReceiver", "RTCRtpTransceiver", "RTCDtlsTransport", "RTCIceTransport", "RTCTrackEvent", "RTCSctpTransport", "RTCDataChannel", "RTCDataChannelEvent", "RTCDTMFSender", "RTCDTMFToneChangeEvent", "RTCStatsReport", "RTCError", "RTCErrorEvent", "RTCPeerConnection"]);
 
+// MediaStream Image Capture
+// 用于生成摄影图像捕获的方法和相机设置。
+// https://w3c.github.io/mediacapture-image/
+names = filterOut(names, ["ImageCapture", "PhotoCapabilities", "MediaSettingsRange"]);
+
+// Media Capture and Streams
+// 定义从平台请求本地媒体，包括音频和视频的API。
+// https://www.w3.org/TR/mediacapture-streams/
+names = filterOut(names, ["MediaStream", "MediaStreamTrack", "MediaStreamTrackEvent", "OverconstrainedError", "Navigator", "MediaDevices", "MediaDeviceInfo", "InputDeviceInfo"]);
+
+// Network Information API
+// 使web应用程序能够访问设备所使用的有关网络连接的信息的API
+// https://wicg.github.io/netinfo
+names = filterOut(names, ["NavigatorNetworkInformation", "NetworkInformation"]);
 
 console.log(names.length);
 </script>
