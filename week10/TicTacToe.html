@@ -16,10 +16,12 @@
         [0, 1, 0],
         [0, 0, 0]
     ];
-
+    let color = 1;
     function show(){
+        let board = document.getElementById('board');
+        board.innerHTML = ""; // 清空刷新
         let fragment = document.createDocumentFragment();
-        for(let i = 0; i < 3; i++){
+        for(let i = 0; i < 3; i++){ // 必须用let，否则要用IIFE解决闭包问题
             for(let j = 0; j < 3; j++){
                 let cell = document.createElement("div");
                 cell.classList.add("cell");
@@ -28,14 +30,25 @@
                     pattern[i][j] == 1 ? "⭕️" :
                     "";
 
+                cell.addEventListener("click", () => move(j, i)); 
+                // 下棋点击事件
+                // j是横轴坐标，i是纵轴坐标，所以是move(j,i)而不是move(i,j)
+
                 fragment.appendChild(cell);
             }
             fragment.appendChild(document.createElement("br"));
-        }
-        document.getElementById('board').appendChild(fragment)
+        } 
+        board.appendChild(fragment);
     }
     
+    function move(x, y){
+        if(pattern[y][x] !== 0)
+            return;
 
+        pattern[y][x] = color;
+        color = 3 - color;
+        show(); 
+    }
 
     show();
 </script>
