@@ -12,11 +12,11 @@
 <div id="board"></div>
 <script>
     let pattern = [
-        [1, 2, 0],
-        [0, 1, 0],
+        [0, 0, 0],
+        [0, 0, 0],
         [0, 0, 0]
     ];
-    let color = 2;
+    let color = 1;
     function show(){
         let board = document.getElementById('board');
         board.innerHTML = ""; // 清空刷新
@@ -30,7 +30,7 @@
                     pattern[i][j] == 1 ? "⭕️" :
                     "";
 
-                cell.addEventListener("click", () => move(j, i)); 
+                cell.addEventListener("click", () => userMove(j, i)); 
                 // 下棋点击事件
                 // j是横轴坐标，i是纵轴坐标，所以是move(j,i)而不是move(i,j)
 
@@ -41,7 +41,7 @@
         board.appendChild(fragment);
     }
     
-    function move(x, y){
+    function userMove(x, y){
         if(pattern[y][x] !== 0)
             return;
         
@@ -53,6 +53,18 @@
         show(); 
         if(willWin(pattern, color))
             console.log(color == 2 ? "❌ will win!" : "⭕️ will win!")
+        computerMove();
+    }
+
+    function computerMove(){
+        let choice = bestChoice(pattern, color);
+        if(choice.point)
+            pattern[choice.point[1]][choice.point[0]] = color;
+        if(check(pattern, color)){
+            alert(color == 2 ? "❌ is winner!" : "⭕️ is winner!")
+        }
+        color = 3 - color;
+        show();
     }
 
     // 检查是否赢了
@@ -127,8 +139,32 @@
         return false;
     }
 
+    // 棋谱
+    let openings = new Map();
+    openings.set([
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ].toString() + "1", {
+        point: [1, 1],
+        result: 0
+    })
+
+    openings.set([
+        [0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0]
+    ].toString() + "2", {
+        point: [0, 0],
+        result: 0
+    })
+
     // 必输的情况：1.我方没有要赢得点 2.且对方有两个要赢的点
     function bestChoice(pattern, color){
+        if(openings.has(pattern.toString() + color)){
+            return openings.get(pattern.toString() + color);
+        }
+
         let point = willWin(pattern, color);
         // 如果存在有要赢的点
         if(point){ 
