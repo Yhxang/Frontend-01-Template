@@ -121,10 +121,56 @@
                 let tmp = clone(pattern);
                 tmp[i][j] = color;
                 if(check(tmp, color)) // 检查若在无子位置落子是否会赢
-                    return true;
+                    return [j, i]; // 返回要赢的落子坐标
             }
         }
         return false;
+    }
+
+    // 必输的情况：1.我方没有要赢得点 2.且对方有两个要赢的点
+    function bestChoice(pattern, color){
+        let point = willWin(pattern, color);
+        // 如果存在有要赢的点
+        if(point){ 
+            return {
+                point: point,
+                result: 1
+            }
+        }
+        // 以上部分是递归的退出终止条件1
+
+        let result = -1; // 先默认自己要输
+
+        outer: for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                if(pattern[i][j] !== 0)
+                    continue;
+                let tmp = clone(pattern);
+                tmp[i][j] = color; // 模拟我方走子
+
+                // 模拟我方走子后，对方的bestChoice
+                let opp = bestChoice(tmp, 3 - color); // 对手的最好情况
+                if( - opp.result >= result ){ 
+                    // 我方与对手的结果始终相反，对方的【负】结果也就是我方的结果，
+                    // 1. 对方最好结果要赢 opp.result 为 1，则我方要输， -opp.result= -1 
+                    // 2. 对方最好结果要输 opp.result 为-1，则我方要赢， -opp.result= +1 
+                    // 3. 对方最好结果要平 opp.result 为 0，则我方要平， -opp.result= -0 
+
+                    // 而opp.result是对方最好的结果， 【负】opp.result也就是指对手最坏的结果，我会选择对方最不利的结果
+                    point = [j, i]; // 记录下对方最坏结果时的我方落子
+                    result = - opp.result; // 记录下结果
+                }
+                if(result == 1)
+                    break outer; // 输赢剪枝
+            }
+        }
+
+        // 退出递归的终止条件2
+        // 
+        return {
+            point: point,
+            result: point ? result : 0 // 1: 赢 0：平 -1：输
+        }
     }
 
     show();
