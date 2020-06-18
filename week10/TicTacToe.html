@@ -12,11 +12,11 @@
 <div id="board"></div>
 <script>
     let pattern = [
-        [2, 0, 0],
+        [1, 2, 0],
         [0, 1, 0],
         [0, 0, 0]
     ];
-    let color = 1;
+    let color = 2;
     function show(){
         let board = document.getElementById('board');
         board.innerHTML = ""; // 清空刷新
@@ -44,13 +44,15 @@
     function move(x, y){
         if(pattern[y][x] !== 0)
             return;
-            
+        
         pattern[y][x] = color;
         if(check(pattern, color)){
             alert(color == 2 ? "❌ is winner!" : "⭕️ is winner!")
         }
         color = 3 - color;
         show(); 
+        if(willWin(pattern, color))
+            console.log(color == 2 ? "❌ will win!" : "⭕️ will win!")
     }
 
     // 检查是否赢了
@@ -103,6 +105,25 @@
                 return true;
         }
 
+        return false;
+    }
+
+    function clone(pattern){
+        return JSON.parse(JSON.stringify(pattern));
+    }
+
+    // 检查是否马上要赢了
+    function willWin(pattern, color){
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                if(pattern[i][j] !== 0) // 如果位置有子则忽略该位置
+                    continue;
+                let tmp = clone(pattern);
+                tmp[i][j] = color;
+                if(check(tmp, color)) // 检查若在无子位置落子是否会赢
+                    return true;
+            }
+        }
         return false;
     }
 
