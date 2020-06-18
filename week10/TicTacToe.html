@@ -12,9 +12,9 @@
 <div id="board"></div>
 <script>
     let pattern = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0
     ];
     let color = 1;
     function show(){
@@ -26,8 +26,8 @@
                 let cell = document.createElement("div");
                 cell.classList.add("cell");
                 cell.innerText = 
-                    pattern[i][j] == 2 ? "❌" :
-                    pattern[i][j] == 1 ? "⭕️" :
+                    pattern[i * 3 + j] == 2 ? "❌" :
+                    pattern[i * 3 + j] == 1 ? "⭕️" :
                     "";
 
                 cell.addEventListener("click", () => userMove(j, i)); 
@@ -42,10 +42,10 @@
     }
     
     function userMove(x, y){
-        if(pattern[y][x] !== 0)
+        if(pattern[y * 3 + x] !== 0)
             return;
         
-        pattern[y][x] = color;
+        pattern[y * 3 + x] = color;
         if(check(pattern, color)){
             alert(color == 2 ? "❌ is winner!" : "⭕️ is winner!")
         }
@@ -59,7 +59,7 @@
     function computerMove(){
         let choice = bestChoice(pattern, color);
         if(choice.point)
-            pattern[choice.point[1]][choice.point[0]] = color;
+            pattern[choice.point[1] * 3 + choice.point[0]] = color;
         if(check(pattern, color)){
             alert(color == 2 ? "❌ is winner!" : "⭕️ is winner!")
         }
@@ -72,7 +72,7 @@
         for(let i = 0; i < 3; i++){
             let win = true;
             for(let j = 0; j < 3; j++){
-                if(pattern[i][j] != color){
+                if(pattern[i * 3 + j] != color){
                     win = false;
                     break;
                 }
@@ -84,7 +84,7 @@
         for(let i = 0; i < 3; i++){
             let win = true;
             for(let j = 0; j < 3; j++){
-                if(pattern[j][i] != color){
+                if(pattern[j * 3 + i] != color){
                     win = false;
                     break;
                 }
@@ -96,7 +96,7 @@
         {
             let win = true;
             for(let j = 0; j < 3; j++){
-                if(pattern[j][j] != color){
+                if(pattern[j * 3 + j] != color){
                     win = false;
                     break;
                 }
@@ -108,7 +108,7 @@
         {
             let win = true;
             for(let j = 0; j < 3; j++){
-                if(pattern[j][2 - j] != color){
+                if(pattern[j * 3 + 2 - j] != color){
                     win = false;
                     break;
                 }
@@ -121,17 +121,18 @@
     }
 
     function clone(pattern){
-        return JSON.parse(JSON.stringify(pattern));
+        //return JSON.parse(JSON.stringify(pattern));
+        return Object.create(pattern); // 创建新对象，性能好非常多
     }
 
     // 检查是否马上要赢了
     function willWin(pattern, color){
         for(let i = 0; i < 3; i++){
             for(let j = 0; j < 3; j++){
-                if(pattern[i][j] !== 0) // 如果位置有子则忽略该位置
+                if(pattern[i * 3 + j] !== 0) // 如果位置有子则忽略该位置
                     continue;
                 let tmp = clone(pattern);
-                tmp[i][j] = color;
+                tmp[i * 3 + j] = color;
                 if(check(tmp, color)) // 检查若在无子位置落子是否会赢
                     return [j, i]; // 返回要赢的落子坐标
             }
@@ -142,18 +143,18 @@
     // 棋谱
     let openings = new Map();
     openings.set([
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
+        0, 0, 0,
+        0, 0, 0,
+        0, 0, 0
     ].toString() + "1", {
         point: [1, 1],
         result: 0
     })
 
     openings.set([
-        [0, 0, 0],
-        [0, 1, 0],
-        [0, 0, 0]
+        0, 0, 0,
+        0, 1, 0,
+        0, 0, 0
     ].toString() + "2", {
         point: [0, 0],
         result: 0
@@ -179,10 +180,10 @@
 
         outer: for(let i = 0; i < 3; i++){
             for(let j = 0; j < 3; j++){
-                if(pattern[i][j] !== 0)
+                if(pattern[i * 3 + j] !== 0)
                     continue;
                 let tmp = clone(pattern);
-                tmp[i][j] = color; // 模拟我方走子
+                tmp[i * 3 + j] = color; // 模拟我方走子
 
                 // 模拟我方走子后，对方的bestChoice
                 let opp = bestChoice(tmp, 3 - color); // 对手的最好情况
