@@ -30,12 +30,12 @@ names = names.filter( e => !e.match(/^on/))
 
 names = names.filter( e => !e.match(/^webkit/))
 
-
-//http://www.ecma-international.org/ecma-402/5.0/index.html#Title   //Internationalization
+// Internationalization
+// http://www.ecma-international.org/ecma-402/5.0/index.html#Title   
 
 names = names.filter(e => e != "Intl")
 
-//https://html.spec.whatwg.org/#window
+// https://html.spec.whatwg.org/#window
 
 {
     let windowprops = new Set();
@@ -44,7 +44,7 @@ names = names.filter(e => e != "Intl")
     names = names.filter(e => !windowprops.has(e));
 }
 
-//https://html.spec.whatwg.org/
+// https://html.spec.whatwg.org/
 
 {
     let interfaces = new Set();
@@ -54,43 +54,50 @@ names = names.filter(e => e != "Intl")
     names = names.filter(e => !interfaces.has(e));
 }
 
-
-//https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.6
+// WebGL
+// https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.6
 
 names = filterOut(names, ["WebGLVertexArrayObject", "WebGLUniformLocation", "WebGLTransformFeedback", "WebGLTexture", "WebGLSync", "WebGLShaderPrecisionFormat", "WebGLShader", "WebGLSampler", "WebGLRenderingContext", "WebGLRenderbuffer", "WebGLQuery", "WebGLProgram", "WebGLFramebuffer", "WebGLContextEvent", "WebGLBuffer", "WebGLActiveInfo", "WebGL2RenderingContext"]);
 
 // Web Audio API
-// 处理和合成音频的高级Web API
+// 处理和合成音频的高层Web API
 // https://www.w3.org/TR/webaudio/
 
 names = filterOut(names, ["BaseAudioContext", "AudioContext", "OfflineAudioContext", "AudioBuffer", "AudioNode", "AudioParam", "AudioScheduledSourceNode", "AnalyserNode", "AudioBufferSourceNode", "AudioDestinationNode", "AudioListener", "AudioProcessingEvent", "BiquadFilterNode", "ChannelMergerNode", "ChannelSplitterNode", "ConstantSourceNode", "ConvolverNode", "DelayNode", "DynamicsCompressorNode", "GainNode", "IIRFilterNode", "MediaElementAudioSourceNode", "MediaStreamAudioDestinationNode", "MediaStreamAudioSourceNode", "MediaStreamTrackAudioSourceNode", "OscillatorNode", "PannerNode", "PeriodicWave", "ScriptProcessorNode", "StereoPannerNode", "WaveShaperNode", "AudioWorklet", "AudioWorkletGlobalScope", "AudioWorkletNode", "AudioWorkletProcessor", "OfflineAudioCompletionEvent"]);
 
-//https://encoding.spec.whatwg.org/#dom-textencoder
+// Encoding
+// https://encoding.spec.whatwg.org/#dom-textencoder
 
 names = filterOut(names, ["TextDecoder", "TextEncoder", "TextDecoderStream", "TextEncoderStream"]);
 
-//https://wicg.github.io/BackgroundSync/spec/#sync-manager-interface
+// Web Background Synchronization
+// 使web应用程序能够在后台同步数据
+// https://wicg.github.io/BackgroundSync/spec/#sync-manager-interface
 
 names = filterOut(names, ["SyncManager"]);
 
-//https://streams.spec.whatwg.org/#blqs-class
+// Streams
+// 用于创建、组合和使用有效映射到底层I/O基元的数据流的api
+// https://streams.spec.whatwg.org/#blqs-class
 
 names = filterOut(names, ["ReadableStream", "ReadableStreamDefaultReader", "ReadableStreamBYOBReader", "ReadableStreamDefaultController", "ReadableByteStreamController", "ReadableStreamBYOBRequest", "WritableStream", "WritableStreamDefaultWriter", "WritableStreamDefaultController", "TransformStream", "TransformStreamDefaultController", "ByteLengthQueuingStrategy", "CountQueuingStrategy"]);
 
 
 /******************** 以下为作业补充 ********************/
 
-
-//https://compat.spec.whatwg.org/
+// Compatibility
+// 非标准api
+// https://compat.spec.whatwg.org/
 names = filterOut(names, ["WebKitCSSMatrix"]);
 
-//https://fetch.spec.whatwg.org/
+// https://fetch.spec.whatwg.org/
 names = filterOut(names, ["fetch", "Headers", "Request", "Response"]);
 
-//https://fullscreen.spec.whatwg.org/ 
+// The Screen Orientation
+// https://www.w3.org/TR/screen-orientation/
 names = filterOut(names, ["ScreenOrientation"]);
 
-//https://url.spec.whatwg.org/
+// https://url.spec.whatwg.org/
 names = filterOut(names, ["URL", "URLSearchParams"]);
 
 // XMLHttpRequest
@@ -101,14 +108,19 @@ names = filterOut(names, ["XMLHttpRequest", "FormData", "ProgressEvent"]);
 // https://www.w3.org/TR/2016/REC-media-source-20161117/
 names = filterOut(names, ["MediaSource", "SourceBuffer", "SourceBufferList"]);
 
-//Real-time Communication Between Browsers
+// Real-time Communication Between Browsers
+// web 实时通信技术，使Web应用程序和站点能够捕获和可选的流音频和/或视频媒体，以及在浏览器之间交换任意数据而不需要中间媒介，得共享数据和对等地进行电话会议成为可能。
 // https://w3c.github.io/webrtc-pc/   
-names = filterOut(names, ["RTCSessionDescription", "RTCIceCandidate", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent", "RTCCertificate", "RTCRtpSender", "RTCRtpReceiver", "RTCRtpTransceiver", "RTCDtlsTransport", "RTCIceTransport", "RTCTrackEvent", "RTCSctpTransport", "RTCDataChannel", "RTCDataChannelEvent", "RTCDTMFSender", "RTCDTMFToneChangeEvent", "RTCStatsReport", "RTCError", "RTCErrorEvent", "RTCPeerConnection"]);
+names = filterOut(names, ["RTCSessionDescription", "RTCIceCandidate", "RTCPeerConnectionIceEvent", "RTCPeerConnectionIceErrorEvent", "RTCCertificate", "RTCRtpSender", "RTCRtpReceiver", "RTCRtpTransceiver", "RTCDtlsTransport", "RTCIceTransport", "RTCTrackEvent", "RTCSctpTransport", "RTCDataChannel", "RTCDataChannelEvent", "RTCDTMFSender", "RTCDTMFToneChangeEvent", "RTCStatsReport", "RTCError", "RTCErrorEvent", "RTCPeerConnection", "MediaStreamEvent"]);
 
 // MediaStream Image Capture
 // 用于生成摄影图像捕获的方法和相机设置。
 // https://w3c.github.io/mediacapture-image/
 names = filterOut(names, ["ImageCapture", "PhotoCapabilities", "MediaSettingsRange"]);
+
+// MediaStream Recording
+// https://www.w3.org/TR/mediastream-recording/
+names = filterOut(names, ["MediaRecorder", "BlobEvent", "MediaRecorderErrorEvent"]);
 
 // Media Capture and Streams
 // 定义从平台请求本地媒体，包括音频和视频的API。
@@ -120,5 +132,20 @@ names = filterOut(names, ["MediaStream", "MediaStreamTrack", "MediaStreamTrackEv
 // https://wicg.github.io/netinfo
 names = filterOut(names, ["NavigatorNetworkInformation", "NetworkInformation"]);
 
+// Web Cryptography API
+// 加密操作API
+// https://www.w3.org/TR/WebCryptoAPI/
+names = filterOut(names, ["CryptoKey", "SubtleCrypto", "Crypto", "crypto"]);
+
+// Scalable Vector Graphics (SVG) 
+// https://www.w3.org/TR/SVG11/
+names = filterOut(names, ["SVGStringList", "SVGAngle", "SVGAnimatedAngle", "SVGAnimatedBoolean", "SVGAnimatedEnumeration", "SVGAnimatedInteger", "SVGAnimatedLength", "SVGAnimatedLengthList", "SVGAnimatedNumber", "SVGAnimatedNumberList", "SVGAnimatedPreserveAspectRatio", "SVGAnimatedRect", "SVGAnimatedString", "SVGAnimatedTransformList", "SVGLength", "SVGLengthList", "SVGMatrix", "SVGNumber", "SVGPoint", "SVGPointList", "SVGPreserveAspectRatio", "SVGRect", "SVGStringList", "SVGTransform", "SVGTransformList", "SVGUnitTypes"]);
+
+// UI Events
+// UI事件用于处理用户交互，如鼠标和键盘输入。
+// https://www.w3.org/TR/uievents/
+names = filterOut(names, ["UIEvent", "FocusEvent", "MouseEvent", "WheelEvent", "InputEvent", "KeyboardEvent", "CompositionEvent", "MutationEvent"]);
+
 console.log(names.length);
+
 </script>
