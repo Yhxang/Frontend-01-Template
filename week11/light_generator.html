@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{display: inline-block; vertical-align: middle; width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background-color: gray;}
+        .red.light{background: red;}
+        .yellow.light{background: yellow;}
+        .green.light{background: green;}
+    </style>
+</head>
+<body>
+    <div class="red"></div>
+    <div class="yellow"></div>
+    <div class="green"></div>
+    
+<script>
+function light(color){
+    document.querySelectorAll('div').forEach(ele => ele.classList.remove('light'));
+    document.querySelector(`.${color}`).classList.add('light');
+}
+async function sleep(time){
+    return new Promise(resolve => {
+        let t1 = performance.now()
+        //console.time('t')
+        setTimeout(resolve, time, t1)
+    }).then((t) => {
+        console.log(performance.now() - t)
+        //console.timeEnd('t')
+    })
+}
+
+function * go(){
+    while(true){
+        light('red');
+        yield sleep(1000);
+        light('yellow');
+        yield sleep(200);
+        light('green');
+        yield sleep(500);
+    }
+}
+
+function co(iterator){
+    let {value, done} = iterator.next();
+    if(done)
+        return;
+    if(value instanceof Promise ){
+        value.then(() => {
+            co(iterator);
+        })
+    }
+}
+//co(go());
+
+function co2(generator){
+    return function (){
+        return co(generator());
+    } 
+}
+go = co2(go);
+//go();
+</script>
+</body>
+</html>

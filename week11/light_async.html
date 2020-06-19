@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        div{display: inline-block; vertical-align: middle; width: 100px; height: 100px; border-radius: 50%; overflow: hidden; background-color: gray;}
+        .red.light{background: red;}
+        .yellow.light{background: yellow;}
+        .green.light{background: green;}
+    </style>
+</head>
+<body>
+    <div class="red"></div>
+    <div class="yellow"></div>
+    <div class="green"></div>
+    <button id="next">next</button>
+<script>
+function light(color){
+    document.querySelectorAll('div').forEach(ele => ele.classList.remove('light'));
+    document.querySelector(`.${color}`).classList.add('light');
+}
+async function sleep(time){
+    return new Promise(resolve => {
+        console.time('t')
+        setTimeout(resolve, time)
+    }).then(() => {
+        console.timeEnd('t')
+    })
+}
+
+void async function go(){
+    while(true){
+        light('red');
+        await sleep(2000)
+        light('yellow')
+        await sleep(1000)
+        light('green')
+        await sleep(3000)
+    }   
+}
+
+function sync_go(){
+    light('green');
+    sleep(1000).then(() => {
+        light('yellow');
+        return sleep(200)
+    }).then(() => {
+        light('red');
+        return sleep(500)
+    }).then(sync_go);
+}
+
+
+// 手工控制
+function happen(element, eventName){
+    return new Promise((resolve, reject) => {
+        element.addEventListener(eventName, resolve, {once: true})
+    })
+}
+async function go2(){
+    while(true){
+        light('red');
+        await happen(document.getElementById("next"), "click");
+        light('yellow');
+        await happen(document.getElementById("next"), "click");
+        light('green');
+        await happen(document.getElementById("next"), "click");
+    }   
+}
+
+</script>
+</body>
+</html>

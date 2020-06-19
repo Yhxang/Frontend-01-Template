@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<style>
+    .cell{
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: gray;
+        border-bottom: 1px solid white;
+        border-right: 1px solid white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+        line-height: 0;
+    }
+    .black{
+        background-color: black;
+    }
+</style>
+<div id="container"></div>
+<button onclick="localStorage.map = JSON.stringify(map)">save</button>
+<script>
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
+    //var map = new Array(10001).join(0).split('')
+    //下边是获得自然数队列
+    //var map = Array.from({length:10000}).map((v, i) => i)
+    //var map = Array.from(new Array(10000).keys())
+
+    let container = document.getElementById('container');
+    for(let y = 0; y < 100; y++){
+        for(let x = 0; x < 100; x++){
+            let cell = document.createElement('div');
+            cell.classList.add('cell');
+
+            if(map[y * 100 + x] === 1)
+                cell.classList.add("black");
+
+            cell.addEventListener("mousemove", () => {
+                if(mouse)
+                    if(clear){
+                        cell.classList.remove("black");
+                        map[y * 100 + x] = 0;
+                    }else{
+                        cell.classList.add("black");
+                        map[y * 100 + x] = 1;
+                    } 
+            })
+
+            container.appendChild(cell);
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+    document.addEventListener('mousedown', e => {
+        mouse = true;
+        clear = (e.which === 3); // 左键1 右键3 中键2
+    });
+    document.addEventListener('mouseup', () => mouse = false);
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    function path(map, start, end){
+
+    }
+</script>
