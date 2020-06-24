@@ -68,50 +68,36 @@
 
     async function findPath(map, start, end){
         // 队列
-        let queue = [start];
+        let stack = [start];
         map = map.slice();
 
         container.children[100 * start[1] + start[0]].style.backgroundColor = "red";
         container.children[100 * end[1] + end[0]].style.backgroundColor = "red";
-        
-        while(queue.length){
-            let [x, y] = queue.shift();   // pop unshift / push shift  入队比较频繁所以选择后者
+
+        while(stack.length){
+            let [x, y] = stack.pop();   // 深度优先就是一条路先走到底，把shift改为pop即可，后进先出
             //console.log(x,y)
-            async function insert([x, y], pre){
+            async function insert([x, y]){
                 if(map[100 * y + x] !== 0) // 遇到障碍
                     return;
                 if(x < 0 || y < 0 || x >= 100 || y >= 100) // 遇到边界
                     return;
 
-                map[100 * y + x] = pre;
+                map[100 * y + x] = 2;
                 container.children[100 * y + x].style.backgroundColor = "lightgreen";
                 await sleep(1);
-                queue.push([x, y]);
+                stack.push([x, y]);
             }
 
-            if(x === end[0] && y === end[1]){
-                //return true;
-                let path = [];
-                while(x !== start[0] || y !== start[1]){
-                    path.push([x, y]);
-                    await sleep(30);
-                    container.children[y * 100 + x].style.backgroundColor = "pink";
-                    [x, y] = map[y * 100 + x];
-                }
-                return path;
-            }
+            if(x === end[0] && y === end[1])
+                return true;
 
-            await insert([x - 1, y], [x, y]);
-            await insert([x + 1, y], [x, y]);
-            await insert([x, y - 1], [x, y]);
-            await insert([x, y + 1], [x, y]);
+            await insert([x - 1, y]);
+            await insert([x + 1, y]);
+            await insert([x, y - 1]);
+            await insert([x, y + 1]);
 
-            // 斜线逻辑
-            await insert([x - 1, y - 1], [x, y]);
-            await insert([x + 1, y - 1], [x, y]);
-            await insert([x - 1, y + 1], [x, y]);
-            await insert([x + 1, y + 1], [x, y]);
         }
-        return null;
+        return false;
     }
 </script>
