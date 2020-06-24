@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<style>
+    .cell{
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background-color: gray;
+        border-bottom: 1px solid white;
+        border-right: 1px solid white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+        line-height: 0;
+    }
+    .black{
+        background-color: black;
+    }
+</style>
+<div id="container"></div>
+<button onclick="localStorage.map = JSON.stringify(map)">save</button>
+<script>
+    // A star 启发式搜索
+    // 如果把直线距离作为启发函数最小的点，一定能找到最短路径。
+    // 需要新数据结构，每次吐出最小的点，应该用二叉堆，binary heap
+    // 先用无序数组
+
+    // 数组表示二叉树
+    // 默认小顶堆：
+    //      0
+    //      /\
+    //     1  3
+    //    /\  /\
+    //   6 9  5 7
+    class BinaryHeap{
+        constructor(data, compare){
+            this.data = data;
+            this.compare = compare;
+        }
+        take(){ 
+            if(!this.data.length)
+                return;
+            let min = this.data[0];
+            let i = 0;
+            // fix heap
+            while(i < this.data.length){
+                // 叶子节点位置
+                // i * 2 + 1;
+                // i * 2 + 2;
+                if(i * 2 + 1 >= this.data.length)
+                    break;
+                if(i * 2 + 2 >= this.data.length){ // 如果只有一个叶子
+                    this.data[i] = this.data[i * 2 + 1];
+                    i = i * 2 + 1;
+                    break;
+                }
+                    
+                if(this.compare(this.data[i * 2 + 1], this.data[i * 2 + 2]) < 0){
+                    this.data[i] = this.data[i * 2 + 1];
+                    i = i * 2 + 1;
+                }else{
+                    this.data[i] = this.data[i * 2 + 2];
+                    i = i * 2 + 2;
+                }
+            }
+            if(i < this.data.length - 1)
+                this.insertAt(i, this.data.pop()); // 如果最后一层有空洞不在heap data最后的位置，那么把最后一个挪到空洞位置。
+            else
+                this.data.pop(); // 如果空洞在heap data最后位置，那直接把这个空洞删除掉即可。
+
+            return min;
+        }
+        insertAt(i, v){
+            this.data[i] = v; // 先把值插入到最后 i 位置
+            // Math.floor((i - 1) / 2) 是堆的父元素的位置
+           
+            while (this.compare(v, this.data[Math.floor((i - 1) / 2)]) < 0){ // 如果插入的值比父位置的值小，需要交换位置，把插入的值提到父层
+                this.data[i] = this.data[Math.floor((i - 1) / 2)]; // 交换值
+                this.data[Math.floor((i - 1) / 2)] = v; // 交换值
+
+                i = Math.floor((i - 1) / 2); // 位置切换到父级位置继续循环
+            }
+        }
+
+        insert(v){
+            //this.data.push(v);
+            this.insertAt(this.data.length, v); // insert 是 insertAt 的特例
+        }
+        get length(){
+            return this.data.length;
+        }
+    }
+    // var heap = new BinaryHeap([], (a, b) => a -b);
+    // heap.insert(3);
+    // heap.insert(2);
+    // heap.insert(1);
+    // heap.insert(6);
+    // heap.insert(7);
+    // heap.insert(9);
+    // heap.insert(0);
+    // console.log(heap.data)
+
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
+    //var map = new Array(10001).join(0).split('')
+    //下边是获得自然数队列
+    //var map = Array.from({length:10000}).map((v, i) => i)
+    //var map = Array.from(new Array(10000).keys())
+
+    let container = document.getElementById('container');
+    for(let y = 0; y < 100; y++){
+        for(let x = 0; x < 100; x++){
+            let cell = document.createElement('div');
+            cell.classList.add('cell');
+
+            if(map[y * 100 + x] === 1)
+                cell.classList.add("black");
+
+            cell.addEventListener("mousemove", () => {
+                if(mouse)
+                    if(clear){
+                        cell.classList.remove("black");
+                        map[y * 100 + x] = 0;
+                    }else{
+                        cell.classList.add("black");
+                        map[y * 100 + x] = 1;
+                    } 
+            })
+
+            container.appendChild(cell);
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+    document.addEventListener('mousedown', e => {
+        mouse = true;
+        clear = (e.which === 3); // 左键1 右键3 中键2
+    });
+    document.addEventListener('mouseup', () => mouse = false);
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    async function sleep(time){
+        return new Promise((resolve, reject) =>{
+            setTimeout(resolve, time);
+        })
+    }
+
+
+    async function findPath(map, start, end){
+        map = map.slice();
+
+        function distance([x, y]){
+            return (x - end[0]) ** 2 + (y - end[1]) ** 2; // 因为只需要比较大小，所以不需要开根号
+        }
+
+        let collection = new Sorted([start], (a, b) => distance(a) - distance(b)); // 比较距离终点更近的点
+
+        container.children[100 * start[1] + start[0]].style.backgroundColor = "red";
+        container.children[100 * end[1] + end[0]].style.backgroundColor = "red";
+        
+        while(collection.length){
+            let [x, y] = collection.take();   // 拿出距离终点最近的点，并从collection中删除
+            //console.log(x,y)
+            async function insert([x, y], pre){
+                if(map[100 * y + x] !== 0) // 遇到障碍
+                    return;
+                if(x < 0 || y < 0 || x >= 100 || y >= 100) // 遇到边界
+                    return;
+
+                map[100 * y + x] = pre;
+                container.children[100 * y + x].style.backgroundColor = "lightgreen";
+                await sleep(1);
+                collection.insert([x, y]);
+            }
+
+            if(x === end[0] && y === end[1]){
+                //return true;
+                let path = [];
+                while(x !== start[0] || y !== start[1]){
+                    path.push([x, y]);
+                    await sleep(30);
+                    container.children[y * 100 + x].style.backgroundColor = "pink";
+                    [x, y] = map[y * 100 + x];
+                }
+                return path;
+            }
+
+            await insert([x - 1, y], [x, y]);
+            await insert([x + 1, y], [x, y]);
+            await insert([x, y - 1], [x, y]);
+            await insert([x, y + 1], [x, y]);
+
+            // 斜线逻辑
+            await insert([x - 1, y - 1], [x, y]);
+            await insert([x + 1, y - 1], [x, y]);
+            await insert([x - 1, y + 1], [x, y]);
+            await insert([x + 1, y + 1], [x, y]);
+        }
+        return null;
+    }
+</script>
