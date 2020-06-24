@@ -20,6 +20,38 @@
 <div id="container"></div>
 <button onclick="localStorage.map = JSON.stringify(map)">save</button>
 <script>
+    // A star 启发式搜索
+    // 如果把直线距离作为启发函数最小的点，一定能找到最短路径。
+    // 需要新数据结构，每次吐出最小的点，应该用二叉堆，binary heap
+    // 先用无序数组
+    class Sorted{
+        constructor(data, compare){
+            this.data = data;
+            this.compare = compare;
+        }
+        take(){ 
+            if(!this.data.length)
+                return;
+            let min = this.data[0];
+            let minIndex = 0;
+            for(let i = 1; i < this.data.length; i++){
+                if(this.compare(this.data[i], min) < 0){
+                    min = this.data[i];
+                    minIndex = i; 
+                }
+            }
+            this.data[minIndex] = this.data[this.data.length-1];
+            this.data.pop();
+            return min;
+        }
+        insert(v){
+            this.data.push(v);
+        }
+        get length(){
+            return this.data.length;
+        }
+    }
+
     var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0);
     //var map = new Array(10001).join(0).split('')
     //下边是获得自然数队列
@@ -67,15 +99,19 @@
 
 
     async function findPath(map, start, end){
-        // 队列
-        let queue = [start];
         map = map.slice();
+
+        function distance([x, y]){
+            return (x - end[0]) ** 2 + (y - end[1]) ** 2;
+        }
+
+        let collection = new Sorted([start], (a, b) => distance(a) - distance(b)); // 比较距离终点更近的点
 
         container.children[100 * start[1] + start[0]].style.backgroundColor = "red";
         container.children[100 * end[1] + end[0]].style.backgroundColor = "red";
         
-        while(queue.length){
-            let [x, y] = queue.shift();   // pop unshift / push shift  入队比较频繁所以选择后者
+        while(collection.length){
+            let [x, y] = collection.take();   // 拿出距离终点最近的点，并从collection中删除
             //console.log(x,y)
             async function insert([x, y], pre){
                 if(map[100 * y + x] !== 0) // 遇到障碍
@@ -86,7 +122,7 @@
                 map[100 * y + x] = pre;
                 container.children[100 * y + x].style.backgroundColor = "lightgreen";
                 await sleep(1);
-                queue.push([x, y]);
+                collection.insert([x, y]);
             }
 
             if(x === end[0] && y === end[1]){
