@@ -19,6 +19,7 @@
 </style>
 <div id="container"></div>
 <button onclick="localStorage.map = JSON.stringify(map)">save</button>
+<button onclick="findPath(map,[0,0],[50,50])">findPath</button>
 <script>
     // A star 启发式搜索
     // 如果把直线距离作为启发函数最小的点，一定能找到最短路径。
@@ -74,7 +75,7 @@
             this.data[i] = v; // 先把值插入到最后 i 位置
             // Math.floor((i - 1) / 2) 是堆的父元素的位置
            
-            while (this.compare(v, this.data[Math.floor((i - 1) / 2)]) < 0){ // 如果插入的值比父位置的值小，需要交换位置，把插入的值提到父层
+            while (i > 0 && this.compare(v, this.data[Math.floor((i - 1) / 2)]) < 0){ // 如果插入的值比父位置的值小，需要交换位置，把插入的值提到父层
                 this.data[i] = this.data[Math.floor((i - 1) / 2)]; // 交换值
                 this.data[Math.floor((i - 1) / 2)] = v; // 交换值
 
@@ -153,7 +154,7 @@
             return (x - end[0]) ** 2 + (y - end[1]) ** 2; // 因为只需要比较大小，所以不需要开根号
         }
 
-        let collection = new Sorted([start], (a, b) => distance(a) - distance(b)); // 比较距离终点更近的点
+        let collection = new BinaryHeap([start], (a, b) => distance(a) - distance(b)); // 比较距离终点更近的点
 
         container.children[100 * start[1] + start[0]].style.backgroundColor = "red";
         container.children[100 * end[1] + end[0]].style.backgroundColor = "red";
@@ -190,11 +191,15 @@
             await insert([x, y - 1], [x, y]);
             await insert([x, y + 1], [x, y]);
 
-            // 斜线逻辑
-            await insert([x - 1, y - 1], [x, y]);
-            await insert([x + 1, y - 1], [x, y]);
-            await insert([x - 1, y + 1], [x, y]);
-            await insert([x + 1, y + 1], [x, y]);
+            // 斜线逻辑 修复细斜线不可穿透
+            if(map[x - 1] != 0 || map[y - 1] != 0)
+                await insert([x - 1, y - 1], [x, y]);
+            if(map[x + 1] != 0 || map[y - 1] != 0)
+                await insert([x + 1, y - 1], [x, y]);
+            if(map[x - 1] != 0 || map[y + 1] != 0)
+                await insert([x - 1, y + 1], [x, y]);
+            if(map[x + 1] != 0 || map[y + 1] != 0)
+                await insert([x + 1, y + 1], [x, y]);
         }
         return null;
     }
