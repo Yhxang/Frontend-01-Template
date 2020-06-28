@@ -19,6 +19,7 @@
 </style>
 <div id="container"></div>
 <button onclick="localStorage.map = JSON.stringify(map)">save</button>
+<button onclick="delete localStorage.map; location.reload();">clear</button>&emsp;
 <button onclick="findPath(map,[0,0],[50,50])">findPath</button>
 <script>
     // A star 启发式搜索
@@ -149,6 +150,9 @@
 
     async function findPath(map, start, end){
         map = map.slice();
+        let table = new Array(10000).fill(Infinity); //记录从起点的长度
+
+        table[start[1] * 100 + start[0]] = 0;
 
         function distance([x, y]){
             return (x - end[0]) ** 2 + (y - end[1]) ** 2; // 因为只需要比较大小，所以不需要开根号
@@ -161,14 +165,23 @@
         
         while(collection.length){
             let [x, y] = collection.take();   // 拿出距离终点最近的点，并从collection中删除
+            let fromStart = table[100 * y + x];
             //console.log(x,y)
-            async function insert([x, y], pre){
+            async function insert([x, y], pre, fromStart){
                 if(map[100 * y + x] !== 0) // 遇到障碍
                     return;
                 if(x < 0 || y < 0 || x >= 100 || y >= 100) // 遇到边界
                     return;
+                
+                if(fromStart >= table[100 * y + x]){
+                    console.log(fromStart,table[100 * y + x])
+                    return;
+
+                }
+                   
 
                 map[100 * y + x] = pre;
+                table[100 * y + x] = fromStart;
                 container.children[100 * y + x].style.backgroundColor = "lightgreen";
                 await sleep(1);
                 collection.insert([x, y]);
@@ -183,23 +196,24 @@
                     container.children[y * 100 + x].style.backgroundColor = "pink";
                     [x, y] = map[y * 100 + x];
                 }
+                console.log(table)
                 return path;
             }
 
-            await insert([x - 1, y], [x, y]);
-            await insert([x + 1, y], [x, y]);
-            await insert([x, y - 1], [x, y]);
-            await insert([x, y + 1], [x, y]);
+            await insert([x - 1, y], [x, y], fromStart + 1);
+            await insert([x + 1, y], [x, y], fromStart + 1);
+            await insert([x, y - 1], [x, y], fromStart + 1);
+            await insert([x, y + 1], [x, y], fromStart + 1);
 
             // 斜线逻辑 修复细斜线不可穿透
             if(map[x - 1] != 0 || map[y - 1] != 0)
-                await insert([x - 1, y - 1], [x, y]);
+                await insert([x - 1, y - 1], [x, y], fromStart + 1.4);
             if(map[x + 1] != 0 || map[y - 1] != 0)
-                await insert([x + 1, y - 1], [x, y]);
+                await insert([x + 1, y - 1], [x, y], fromStart + 1.4);
             if(map[x - 1] != 0 || map[y + 1] != 0)
-                await insert([x - 1, y + 1], [x, y]);
+                await insert([x - 1, y + 1], [x, y], fromStart + 1.4);
             if(map[x + 1] != 0 || map[y + 1] != 0)
-                await insert([x + 1, y + 1], [x, y]);
+                await insert([x + 1, y + 1], [x, y], fromStart + 1.4);
         }
         return null;
     }
