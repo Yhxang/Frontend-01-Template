@@ -1,0 +1,43 @@
+<script>
+var regexp = /([0-9\.]+)|( +)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
+var dictionary = ["Number", "WhiteSpace", "LineTerminator", "+", "-", "*", "/"];
+
+function* tokenize(source){
+    let result = null;
+    let lastIndex = 0;
+    while((result = regexp.exec(source)) !== null){
+        let token = {
+            type: null,
+            value: null
+        }
+
+        if(regexp.lastIndex - lastIndex > result[0].length)
+            throw new Error(`Unexpected token "${source.slice(lastIndex, regexp.lastIndex - result[0].length)}"!`);
+
+        for(let i = 0; i < dictionary.length; i++){
+            if(result[i + 1])
+                token.type = dictionary[i];
+        }
+        token.value = result[0];
+
+        lastIndex = regexp.lastIndex;
+        yield token;
+    }
+    yield {type: "EOF"};
+}
+
+function Expression(tokens){
+}
+function AdditiveExpression(source){
+}
+function multiplicativeExpression(source){
+    console.log(source);
+}
+
+let  source = [];
+for(let token of tokenize("1024 + 10 * 25")){
+    if(token.type !== "WhiteSpace" && token.type !== "LineTerminator")
+        source.push(token);
+}
+multiplicativeExpression(source);
+</script>
