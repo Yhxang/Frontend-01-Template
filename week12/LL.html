@@ -2,7 +2,7 @@
 var regexp = /([0-9\.]+)|( +)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
 var dictionary = ["Number", "WhiteSpace", "LineTerminator", "+", "-", "*", "/"];
 
-function* tokenize(source){
+function* tokenize(source){ // Generator
     let result = null;
     let lastIndex = 0;
     while((result = regexp.exec(source)) !== null){
@@ -26,18 +26,141 @@ function* tokenize(source){
     yield {type: "EOF"};
 }
 
-function Expression(tokens){
+// TODO: 实现括号运算
+
+/*
+四则运算产生式
+
+<Expression> ::=
+    <AdditiveExpression> <EOF>
+*/
+function Expression(source){
+    if(source[0].type === "AdditiveExpression" && source[1].type === "EOF"){
+        let node = {
+            type: "Expression",
+            children: [source.shift(), source.shift()]
+        }
+        source.unshift(node);
+        return node;
+    }
+    AdditiveExpression(source);
+    return Expression(source);
 }
+
+/*
+加法运算产生式
+
+<AdditiveExpression> ::=
+    <MultiplicativeExpression>
+    | <AdditiveExpression> <+> <MultiplicativeExpression>
+    | <AdditiveExpression> <-> <MultiplicativeExpression>
+
+把<MultiplicativeExpression>展开后：
+
+<AdditiveExpression> ::=
+    <Number>
+    | <MultiplicativeExpression> <*> <Number>
+    | <MultiplicativeExpression> </> <Number>
+    | <AdditiveExpression> <+> <MultiplicativeExpression>
+    | <AdditiveExpression> <-> <MultiplicativeExpression>
+*/
 function AdditiveExpression(source){
+    // <MultiplicativeExpression>
+    if(source[0].type === "Number"){
+        MultiplicativeExpression(source);
+    }
+
+    // <AdditiveExpression>
+    if(source[0].type === "MultiplicativeExpression"){
+        let node = {
+            type: "AdditiveExpression",
+            children: [source.shift()]
+        }
+        source.unshift(node);
+        return AdditiveExpression(source);
+    }
+
+    // <AdditiveExpression> <+> <MultiplicativeExpression>
+    if(source[0].type === "AdditiveExpression" &&
+        source.length > 1 && source[1].type === "+"){
+        let node = {
+            type: "AdditiveExpression",
+            children: [source.shift(), source.shift()]
+        }
+        MultiplicativeExpression(source);
+        node.children.push(source.shift());
+        source.unshift(node);
+        return AdditiveExpression(source);
+    }
+
+    // <AdditiveExpression> <-> <MultiplicativeExpression>
+    if(source[0].type === "AdditiveExpression" &&
+        source.length > 1 && source[1].type === "-"){
+        let node = {
+            type: "AdditiveExpression",
+            children: [source.shift(), source.shift()]
+        }
+        MultiplicativeExpression(source);
+        node.children.push(source.shift());
+        source.unshift(node);
+        return AdditiveExpression(source);
+    }
+
+    if(source[0].type === "AdditiveExpression")
+        return source[0];
+
+    throw new Error();
 }
-function multiplicativeExpression(source){
-    console.log(source);
+
+/*
+乘法产生式
+
+<MultiplicativeExpression> ::=
+    <Number>
+    | <MultiplicativeExpression> <*> <Number>
+    | <MultiplicativeExpression> </> <Number>
+*/
+function MultiplicativeExpression(source){
+    // <Number>
+    if(source[0].type === "Number"){
+        let node = {
+            type: "MultiplicativeExpression",
+            children: source.shift()
+        }
+        source.unshift(node);
+        return MultiplicativeExpression(source);
+    }
+    // <MultiplicativeExpression> <*> <Number>
+    if(source[0].type === "MultiplicativeExpression" && 
+        source.length > 1 && source[1].type === "*"){
+        let node = {
+            type: "MultiplicativeExpression",
+            children: [source.shift(), source.shift(), source.shift()]
+        }
+        source.unshift(node);
+        return MultiplicativeExpression(source);
+    }
+    // <MultiplicativeExpression> </> <Number>
+    if(source[0].type === "MultiplicativeExpression" && 
+        source.length > 1 && source[1].type === "/"){
+        let node = {
+            type: "MultiplicativeExpression",
+            children: [source.shift(), source.shift(), source.shift()]
+        }
+        source.unshift(node);
+        return MultiplicativeExpression(source);
+    }
+    if(source[0].type === "MultiplicativeExpression")
+        return source[0];
+
+    throw new Error(); 
 }
 
 let  source = [];
-for(let token of tokenize("1024 + 10 * 25")){
+for(let token of tokenize("5 + 1024 * 2")){
     if(token.type !== "WhiteSpace" && token.type !== "LineTerminator")
         source.push(token);
 }
-multiplicativeExpression(source);
+
+console.log(Expression(source));
 </script>
