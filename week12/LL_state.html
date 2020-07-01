@@ -1,0 +1,93 @@
+<script>
+let EOF = Symbol("EOF");
+let current =  "";
+
+function data(c){
+    if(c == EOF){
+        emit({
+            type: "EOF"
+        })
+        return ;
+    }else if(/\d/.test(c)){
+        current =  "";
+        return NumberStr(c);
+    }else if(c == "+"){
+        emit({
+            type: "+",
+            value: c
+        })
+        return beforeNumber;
+    }else if(c == "-"){
+        emit({
+            type: "-",
+            value: c
+        })
+        return beforeNumber;
+    }else if(c == "*"){
+        emit({
+            type: "*",
+            value: c
+        })
+        return beforeNumber;
+    }else if(c == "/"){
+        emit({
+            type: "/",
+            value: c
+        })
+        return beforeNumber;
+    }else if(/[\r\n]/.test(c)){
+        emit({
+            type: "LineTerminator",
+            value: c
+        })
+        return data;
+    }else if(c == " "){
+        emit({
+            type: "WhiteSpace",
+            value: c
+        })
+        return data;
+    }
+}
+function NumberStr(c){
+    if(c !== EOF && /\d/.test(c)){
+        current += c;
+        return NumberStr;
+    }else{
+        emit({
+            type: "Number",
+            value: current
+        })
+        return data(c);
+    }
+}
+function beforeNumber(c){
+    if(c == " "){
+        emit({
+            type: "WhiteSpace",
+            value: c
+        })
+        return beforeNumber;
+    }else if(/\d/.test(c)){
+        current = "";
+        return NumberStr(c);
+    }else if(c == EOF){
+        throw "no number at last";
+        return;
+    }
+}
+function emit(token){
+    console.log(token);
+}
+
+function tokenize(source){
+    let state = data;
+    for(let c of source){
+        state = state(c);
+    }
+    state = state(EOF);
+}
+
+tokenize("1024  + 10 * 25");
+
+</script>

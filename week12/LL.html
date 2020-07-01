@@ -1,6 +1,6 @@
 <script>
-var regexp = /([0-9\.]+)|( +)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
-var dictionary = ["Number", "WhiteSpace", "LineTerminator", "+", "-", "*", "/"];
+var regexp = /([0-9\.]+)|( +)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)|(\()|(\))/g;
+var dictionary = ["Number", "WhiteSpace", "LineTerminator", "+", "-", "*", "/", "(", ")"];
 
 function* tokenize(source){ // Generator
     let result = null;
@@ -27,6 +27,70 @@ function* tokenize(source){ // Generator
 }
 
 // TODO: 实现括号运算
+/* 
+(1 + 2) * 3
+Expression:
+    MultiplicativeExpression 
+        AdditiveExpression 
+            MultiplicativeExpression
+                Number
+            +
+            Number
+        *
+        Number
+    EOF
+*/
+
+/*
+ParenthesizedExpression ::=
+    ( Expression )
+
+[
+  {
+    "type": "Expression",
+    "children": [
+      {
+        "type": "Expression",
+        "children": [
+          {
+            "type": "Number",
+            "value": "1"
+          },
+          {
+            "type": "+",
+            "value": "+"
+          },
+          {
+            "type": "Number",
+            "value": "2"
+          }
+        ]
+      },
+      {
+        "type": "*",
+        "value": "*"
+      },
+      {
+        "type": "Number",
+        "value": "3"
+      },
+      {
+        "type": "EOF"
+      }
+    ]
+  }
+]"
+*/
+
+function ParenthesizedExpression(source){
+    if(!source) return;
+    for(let node of source){
+        ParenthesizedExpression(node.children);
+        if(node.type =="ParenthesizedExpression"){
+            Expression(node.children)
+        }  
+    }
+}
 
 /*
 四则运算产生式
@@ -35,6 +99,12 @@ function* tokenize(source){ // Generator
     <AdditiveExpression> <EOF>
 */
 function Expression(source){
+    // if(source[0].type === "Expression"  && source[1].type === "EOF"){
+    //     return source;
+    // }
+    // if(source[0].type === "Expression" ){
+    //     return source;
+    // }
     if(source[0].type === "AdditiveExpression" && source[1].type === "EOF"){
         let node = {
             type: "Expression",
@@ -42,6 +112,9 @@ function Expression(source){
         }
         source.unshift(node);
         return node;
+    }
+    if(source[0].type === "AdditiveExpression"){
+
     }
     AdditiveExpression(source);
     return Expression(source);
@@ -155,12 +228,38 @@ function MultiplicativeExpression(source){
 
     throw new Error(); 
 }
-
-let  source = [];
-for(let token of tokenize("5 + 1024 * 2")){
-    if(token.type !== "WhiteSpace" && token.type !== "LineTerminator")
-        source.push(token);
+/* 
+(1 + 2) * 3
+Expression:
+    MultiplicativeExpression 
+        AdditiveExpression 
+            MultiplicativeExpression
+                Number
+            +
+            Number
+        *
+        Number
+    EOF
+*/
+let source = [];
+let stack = [{type: "Expression", children: []}];
+for(let token of tokenize("(2+4)*3")){
+    if(token.type !== "WhiteSpace" && token.type !== "LineTerminator"){
+        let top = stack[stack.length - 1];
+        if(token.type == "("){
+            let subExp = {
+                type: "ParenthesizedExpression",
+                children: []
+            }
+            top.children.push(subExp);
+            stack.push(subExp);
+        }else if(token.type == ")"){
+            stack.pop();
+        }else{
+            top.children.push(token);
+        }
+    }
 }
-
-console.log(Expression(source));
+//console.log(Expression(stack));
+console.log(JSON.stringify( ParenthesizedExpression(stack), null, " " ));
 </script>
