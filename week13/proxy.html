@@ -1,0 +1,171 @@
+<!-- <input type="text" id="r"> -->
+<label for="r">R: </label><input type="range" min=0 max=255 value="0" id="r"><br>
+<label for="g">G: </label><input type="range" min=0 max=255 value="0" id="g"><br>
+<label for="b">B: </label><input type="range" min=0 max=255 value="0" id="b"><br>
+<label for="a">A: </label><input type="range" min=0 max=100 value="100" id="a"><br>
+<div style="width: 100px; height: 100px; background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAA3SURBVDhPYzhz5sx/fJgQAKkZNQQVgNQMN0OgbJwA3VB0DAKjhqBiEBhuhmCTQMaEwJkzZ/4DACm5KRBqTkVMAAAAAElFTkSuQmCC) 0 0 repeat;">
+    <div id="palette" style ="width: 100px; height: 100px; border:1px solid #000; box-sizing: border-box;"></div>
+</div>
+<span id="color-value">The color value is: rgba({{R}}, {{G}}, {{B}}, {{A }});</span>&emsp;<button id="copy" data-copy-target="color-value">复制</button>
+<script>
+    let object = {
+        a: 1,
+        b: 2
+    }
+    let reactivities = new Map();
+    let usedReactivities = [];
+    let observers = new Map();
+
+    function reactive(obj){
+        if(reactivities.has(obj))
+            return reactivities.get(obj);
+
+        let proxy = new Proxy(obj, {
+            get(obj, prop){
+                if(!usedReactivities.some(e => e[0] === obj && e[1] === prop)){ // 防止usedReactivities在收集和赋值时重复收集
+                    usedReactivities.push([obj, prop]); // 静态收集observer赋值函数赋值时需要获取的属性
+                }
+
+                if(typeof obj[prop] == 'object')
+                    return reactive(obj[prop]);
+
+                return Reflect.get(obj, prop);
+            },
+            set(obj, prop, value){
+                let result = Reflect.set(obj, prop, value);
+                //observers.forEach(observer => observer());
+                if(observers.has(obj))
+                    if(observers.get(obj).has(prop))
+                        observers.get(obj).get(prop).forEach(observer => observer());
+
+                return result;
+                //return obj[prop] = value;
+            }
+        })
+
+        reactivities.set(obj, proxy);
+        reactivities.set(proxy, proxy); // 对自己包装
+        return proxy;
+    }
+
+    function effect(observer){ 
+        usedReactivities = [];
+        //console.log(observer);
+        observer();
+        //console.log(usedReactivities)
+        usedReactivities.forEach(usedReactivity => {
+            let [obj, prop] = usedReactivity;
+            if(!observers.has(obj)){
+                observers.set(obj, new Map());
+            }
+
+            if(!observers.get(obj).has(prop)){
+                observers.get(obj).set(prop, []);
+            }
+            observers.get(obj).get(prop).push(observer);
+        })
+        
+        //observers.add(observer);
+    }
+
+    // let dummy;
+    // let proxy = reactive(object);
+    // effect(() => dummy = proxy.a);
+    // console.log(dummy);
+    // proxy.a = 2;
+    // console.log(dummy);
+
+
+    // 函数式 过程式
+    // 第一遍执行 静态依赖收集 
+
+    // let v12, v1, v2;
+    // let p1 = reactive({a: 1})
+    // let p2 = reactive({a: 2})
+    // effect(() => v12 = p1.a + p2.a)
+    // effect(() => v1 = p1.a)
+    // effect(() => v2 = p2.a)
+
+
+    //let p1 = reactive({a: 1})
+    // let b = false;
+    // effect(()=> v = b ? 2 : p1.a);
+    // console.log(v)
+    // b = true
+    // p1.a = 10
+    // console.log(v)
+
+    // let p = reactive({a : {x : 1}});
+    // let v;
+    // effect(() => v = p.a.x)
+    // console.log(v);
+    // p.a = {x: 4};
+    // console.log(v);
+
+
+    // let p = reactive({r: 100});
+    // effect(() => document.getElementById('r').value = p.r)
+    // document.getElementById('r').addEventListener("change", event => {
+    //     console.log(event.target.value)
+    //     p.r = event.target.value;
+    // })
+
+    let rgb = reactive({r:0,g:0,b:0,a:100});
+    effect(() => document.getElementById("r").value = rgb.r)
+    effect(() => document.getElementById("g").value = rgb.g)
+    effect(() => document.getElementById("b").value = rgb.b)
+    effect(() => document.getElementById("a").value = rgb.a)
+    
+    document.getElementById('r').addEventListener("change", event => {
+        rgb.r = event.target.value;
+    })
+    document.getElementById('g').addEventListener("change", event => {
+        rgb.g = event.target.value;
+    })
+    document.getElementById('b').addEventListener("change", event => {
+        rgb.b = event.target.value;
+    })
+    document.getElementById('a').addEventListener("change", event => {
+        rgb.a = event.target.value;
+    })
+
+
+    let colorValue = document.getElementById("color-value");
+    let regexp = /{{\s*([^\}]+?)\s*}}/g;
+    let result = null;
+    let slotRanges = new Map();
+    while((result = regexp.exec(colorValue.childNodes[0].textContent)) !== null){
+        let range = document.createRange();
+        range.setStart(colorValue.childNodes[0], result.index);
+        range.setEnd(colorValue.childNodes[0], regexp.lastIndex);
+        slotRanges.set(result[1].toLowerCase(), range);
+    }
+
+    effect(()=>{
+        document.getElementById("palette").style.backgroundColor=`rgba(${rgb.r},${rgb.g},${rgb.b},${rgb.a/100})`;
+        //document.getElementById("color-value").innerText = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a/100});`;
+
+        slotRanges.forEach((range, k) => {
+            range.extractContents();
+            if("a" !== k) // alpha要除以100
+                range.insertNode(document.createTextNode(rgb[k]));
+            else
+                range.insertNode(document.createTextNode(rgb[k]/100));
+        })
+    })
+
+    document.getElementById("copy").addEventListener("click", event => {
+        let target = document.getElementById(event.target.dataset.copyTarget);
+        var range = new Range();
+        //range.selectNodeContents(target);
+        let startIndex = colorValue.childNodes[0].textContent.match(/rgb/).index;
+        range.setStart(target.childNodes[0], startIndex)
+        range.setEnd(target.childNodes[target.childNodes.length - 1], target.childNodes[target.childNodes.length - 1].textContent.length);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range)
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+        console.log("复制成功");
+    })
+
+</script>

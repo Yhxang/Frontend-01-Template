@@ -1,0 +1,58 @@
+<p id="text">文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 
+    文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 
+    文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 
+    文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 
+    文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 文字 测试 </p>
+<div id="draggable" style="width: 100px; height: 100px; background-color: pink; display: inline-block;"></div>
+<script>
+    let draggable = document.getElementById("draggable");
+    let basePos = {x: 0, y: 0};
+    draggable.addEventListener("mousedown", event => {
+        let pos = {x: event.clientX, y: event.clientY};
+        
+
+        const preventDefault = event => {
+            event.preventDefault();
+        }
+        const move = event => {
+            //draggable.style.transform = `translate(${event.clientX - pos.x + basePos.x}px, ${event.clientY - pos.y + basePos.y}px)`;
+            nearst(event.clientX, event.clientY).insertNode(draggable);
+        }
+        const up = event => {
+            basePos.x = event.clientX - pos.x + basePos.x;
+            basePos.y = event.clientY - pos.y + basePos.y;
+            document.removeEventListener("selectstart", preventDefault)
+            document.removeEventListener("mousemove", move);
+            document.removeEventListener("mouseup", up);
+        }
+
+        document.addEventListener("selectstart", preventDefault);
+        document.addEventListener("mousemove", move);
+        document.addEventListener("mouseup", up);
+    })
+    
+    let insertableRanges = [];
+    let container = document.getElementById("text");
+
+    for(let i = 0; i < container.childNodes[0].textContent.length; i ++){
+        let range = document.createRange();
+        range.setStart(container.childNodes[0], i);
+        range.setEnd(container.childNodes[0], i);
+        insertableRanges.push(range);
+    }
+    
+    function nearst(x0, y0){
+        let nearest = null;
+        let distance = Infinity;
+        for(let range of insertableRanges){
+            let {x, y} = range.getBoundingClientRect();
+            let d = (x - x0) ** 2 + (y - y0) ** 2;
+            if(d < distance){
+                distance = d;
+                nearest = range;
+            }
+        }
+        return nearest;
+    }
+
+</script>
