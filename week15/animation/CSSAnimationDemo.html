@@ -1,0 +1,30 @@
+<style>
+    #el{width: 100px; height: 100px; background-color: skyblue;}
+</style>
+<div id="el"></div>
+<button onclick="state.next()['value']()">start</button>
+<script>
+    let el = document.getElementById("el")
+    el.style.transition = 'ease 5s';
+
+    function start (){
+        el.style.transition = 'ease 5s';
+        el.style.transform = "translate(300px,300px)";
+        //return stop;
+    }
+    function stop(){
+        el.style.transform = getComputedStyle(el).transform;
+        el.style.transition = "none";
+        //return start;
+    }
+    //var state = start;
+    function *g(){
+        while(true){
+            yield start;
+            yield stop;
+        }
+    }
+    var state = g();
+    
+
+</script>

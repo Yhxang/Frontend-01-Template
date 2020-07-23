@@ -1,17 +1,19 @@
-# 组件化 | One more thing：Vue 风格的 SFC
+# 组件化
 
-## 前言 
+## 组件化 | One more thing：Vue 风格的 SFC
+
+### 前言 
 上一节熟悉了组件化 React JSX 风格的模式，在webpack里使用`@babel/plugin-transform-react-jsx`插件将render函数中标签转化为创建dom函数，然后完善这个函数实现组件的功能。  
 这节我们来学习组件化的另外一种模式，Vue 风格的 SFC（single-file-component）单文件组件模式。
 
-## SFC（single-file-component）
+### SFC（single-file-component）
 [SFC（single-file-component）](https://vuejs.org/v2/guide/single-file-components.html)是比较流行的一种描述组件的方法。格式如下：  
 
 ![](https://vuejs.org/images/vue-component.png)
 
 实现的基本思路是自定义一种单文件组件文件类型，再通过webpack自定义一个loader来解析该文件，解析后会生成一个虚拟的js文件，该文件再经过babel转换后最终打包完成。  
 
-## 1. webpack配置中的文件解析规则
+### 1. webpack配置中的文件解析规则
 要实现SFC组件，需要写一个webpack的loader。webpack的loader是可以自定义的。详细可查看[官方文档](https://webpack.js.org/contribute/writing-a-loader/#setup)。  
 先看`webpack.config.js`的结构：
 ```javascript
@@ -35,7 +37,7 @@ module.exports = {
 ```
 上边这个 rule 的配置的作用便是用`path/to/loader.js`这个loader文件来解析`.js`后缀的文件。因此，我们可以配置一条规则，用指定 loader 解析指定文件类型。
 
-## 2. loader的结构
+### 2. loader的结构
 `path.resolve("myloader.js")` 加载这个loader.js文件作为自定义的loader，再看一下[文档中loader.js的主体结构](https://webpack.js.org/contribute/writing-a-loader/#loader-utilities)。
 ```javascript
 export default function(source) {
@@ -47,7 +49,7 @@ loader.js的主体是export一个function，这个function输入是source，输�
 
 该loader的作用相似于之前toy-browser里的[parser.js](../week07/toy-browser/parser.js)的作用，parser.js的作用就是把HTML代码转为DOM（DOM相对于HTML的关系类似于AST相对于编程语言），因此把parser.js可以直接拿过来用。
 
-## 3. 自定义SFC文件
+### 3. 自定义SFC文件
 新建一个文件，命名为`carousel.view`（可自定义），这个就是类似于vue的模板文件的文件，在这里写一个Vue风格的用于测试的模板内容：
 ```html
 <template>
@@ -75,7 +77,7 @@ export default {
 }
 </script>
 ```  
-## 4. 配置自定义的loader来解析自定义的SFC
+### 4. 配置自定义的loader来解析自定义的SFC
 现在我们在webpack.config.js的 rules 里添加一条规则，使我们自定义的模板文件用我们自定义的loader解析，先添加rule：
 ```javascript
 const path = require('path');
@@ -103,7 +105,7 @@ module.exports = {
 };
 ```
 
-## 5. loader的内容
+### 5. loader的内容
 新建myloader.js内容如下:
 ```javascript
 module.exports = function (source, map) {
@@ -120,7 +122,7 @@ import {Carousel} from "./carousel.view"
 
 ![](./images/loader_init.png)  
 
-## 6. 完善toy-browser浏览器的parser
+### 6. 完善toy-browser浏览器的parser
 下面修改[parser.js](./parser.js)使之能处理解析`<script>`标签以及标签内的内容。
 ```javascript
 // ...
@@ -180,7 +182,7 @@ module.exports = function (source, map) {
 
 ![](./images/loader_tree.png)  
 
-## 7. 完善myloader
+### 7. 完善myloader
 上边tree可以拿到parser.js解析后的DOM，我们首先要拿到template标签内的内容，这通过filter可以得到：
 ```javascript
 let template = null;
@@ -197,7 +199,7 @@ for(let node of tree.children){
 得到的template的结果：  
 ![](./images/loader_template.png)  
 
-## 7.1 递归生成DOM构建函数
+### 7.1 递归生成DOM构建函数
 DOM构建函数createElement(Cls, attrs, ...children)，最终我们的目的是要得到如下结构：
 ```javascript
 createElement("div", {"type":"startTag","tagName":"div"}, 
@@ -226,7 +228,7 @@ module.exports = function (source, map) {
     }
 }
 ```
-## 7.2 返回转换后的字符串
+### 7.2 返回转换后的字符串
 `myloader.js`最终需要返回字符串输出为解析后的虚拟js文件，使用字符串模板，在render方法内调用上边定义的递归函数`visit(template)`递归得到DOM构建方法字符串。
 ```javascript
 module.exports = function (source, map) {
@@ -255,10 +257,73 @@ DOM树也已经渲染在了浏览器里：
 
 ![](./images/loader_dom.png)  
 
-## 总结
+### 总结
 
 至此，我们完成了对自定义SFC文件的基本的解析打包，相对于JSX的将组件标签写在render函数里，vue风格的SFC将组件模板独立出一个文件，然后用自定义的loader解析，这两种方式都是比较流行的组件化的方式。  
 
 但无论形式怎么变，组件的最重要的设计思想都是不变的，也就是[组件化基础](../week14/NOTE.md)的八大特性（Property、Methods、Inherit、Attribute、Config&State、Event、Lifecycle、Children），只有设计好这些特性，组件体系才会清晰，至于最终具体使用JSX做还是SFC做，这只是具体的实现方式的区别而已。  
 
 另外，站在更高的角度看一个组件体系应该有的分类，分别应该设计成什么样，这也是很关键的。
+
+
+## 组件化 | 动画
+### 前言
+动画有两种方案：CSS动画和JS动画。动画库必然会实现动画的暂停功能，如果设计动画库是使用CSS动画方案，那动画执行过程中如何停下呢，答案是可以用getComputedStyle。
+```javascript
+let el = document.getElementById("el");
+el.style.transition = 'ease 5s';
+
+function start(){
+  el.style.transform = "translate(300px,300px)";
+}
+function stop(){
+  el.style.transform = getComputedStyle(el).transform;
+  el.style.transition = "none";
+}
+```
+效果可以实现，但若此时通过`getComputedStyle(el).transform`去获取元素的`transform`，会得到Matrix 矩阵变形函数，这个函数的参数是很难反算出简单的左右移动的数值的，由此可见CSS动画不好操作计算，因此下面我们选择JS动画作为动画组件的方案。  
+
+### 动画库的构成
+动画是可以独立测试和独立开发的，并不需要一起跟component组件集成。  
+这个库首先应该会export出去一些类，根据业界的实践，动画库最重要的有两个类：`Timeline` 和 `Animation`，我们也最终会export这两个类。  
+```javascript
+export class Timeline{ }
+export class Animation{ }
+```
+### 设计Animation类
+下面设计一下`Animation`类的参数，应该包含如下参数：
+* `object` 执行动画的元素
+* `property` 动画元素的属性
+* `start` 动画元素的属性的起始值
+* `end` 动画元素的属性的结束值
+* `duration` 整个动画过程的持续时间
+* `delay` 执行动画的延迟时间
+* `timingFunction` 动画的缓动函数  
+另外还要有一些`start`、`pause`、`resume`、`stop`等实例方法。  
+
+```javascript
+let anim = new Animation(object, property, start, end, duration, delay, timingFunction);
+anim.start(); 
+anim.pause();
+anim.resume();
+anim.stop();
+```
+### 为什么要需要Timeline类
+上面这样设计可以实现我们的目的，但若有多个动画需要同时控制start/stop，这样会发现单纯用一个Animation不好管理。
+```javascript
+let anim = new Animation(object, property, start, end, duration, delay, timingFunction);
+let anim2 = new Animation(object, property, start, end, duration, delay, timingFunction);
+anim.start(); 
+anim2.start(); 
+```
+另外做动画时，不可避免的用到`setTimeout`/`setInterval`/`requestAnimationFrame`，多次调用便会多次产生函数，比较耗性能。因此我们需要一个时间线Timeline类来统一管理。
+
+### 设计Timeline类
+```javascript
+let tl = new Timeline;
+tl.add(anim); // 添加动画
+tl.add(anim2);
+
+tl.start(); // 统一管理多个动画操作
+tl.pause();
+```
