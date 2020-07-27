@@ -264,8 +264,8 @@ DOM树也已经渲染在了浏览器里：
 但无论形式怎么变，组件的最重要的设计思想都是不变的，也就是[组件化基础](../week14/NOTE.md)的八大特性（Property、Methods、Inherit、Attribute、Config&State、Event、Lifecycle、Children），只有设计好这些特性，组件体系才会清晰，至于最终具体使用JSX做还是SFC做，这只是具体的实现方式的区别而已。  
 
 另外，站在更高的角度看一个组件体系应该有的分类，分别应该设计成什么样，这也是很关键的。
-
-
+  
+  
 ## 组件化 | 动画
 ### 前言
 动画有两种方案：CSS动画和JS动画。动画库必然会实现动画的暂停功能，如果设计动画库是使用CSS动画方案，那动画执行过程中如何停下呢，答案是可以用getComputedStyle。
@@ -327,3 +327,10 @@ tl.add(anim2);
 tl.start(); // 统一管理多个动画操作
 tl.pause();
 ```
+
+### 具体最终实现代码及注释（添加了播放速率及倒放）  
+[animation.js](./animation/animation.js)  
+  
+### 总结
+动画的执行主要由Timeline的 tick 方法完成的，主要就是控制状态。
+
