@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html,body{ width: 100%; height: 100%; margin:0; padding:0;}
+    </style>
+</head>
+<body>
+    <div id="box" style="transform:translate(0,0); width: 100px; height:100px; background: lightgreen;"></div>
+    <script src="./vconsole.js"></script>
+    <script src="./gesture.js"></script>
+    <script>
+        var vConsole = new VConsole(); 
+        let box = document.getElementById("box");
+        
+        document.addEventListener("contextmenu", e => e.preventDefault());
+        document.addEventListener("touchmove", e => e.preventDefault(), {passive: false})
+        enableGesture(box)
+        document.body.addEventListener("tap", event => {
+            console.log("tap!!!")
+        })
+        
+        let x = 0, y = 0;
+        box.addEventListener("pan", event => {
+            //document.getElementById("box")
+            console.log(event.detail)
+            let {clientX, clientY, startX, startY} = event.detail;
+            box.style.transform = `translate(${x + clientX - startX}px,${y + clientY - startY}px)`
+        })
+        box.addEventListener("panend", event => {
+            //document.getElementById("box")
+            console.log(event.detail)
+            let {clientX, clientY, startX, startY} = event.detail;
+            x = x + clientX - startX
+            y = y + clientY - startY
+            //box.style.transform = `translate(${x + clientX - startX}px,${y + clientY - startY}px)`
+        })
+    </script>
+</body>
+</html>
