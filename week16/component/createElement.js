@@ -1,3 +1,5 @@
+import {enableGesture} from "./gesture"
+
 export function createElement(Cls, attributes, ...children) {
     // console.log(arguments)
     // debugger
@@ -62,6 +64,13 @@ export class Wrapper{
     setAttribute(name, value){ // attribute
         //console.log("Parent::setAttribute", name, value)
         this.root.setAttribute(name, value);
+        if(name === "enableGesture"){
+            enableGesture(this.root);
+        }
+        if(name.match(/^on([\s\S]+)$/)){ // onStart -> 'start' 绑定指定事件函数
+            let eventName = RegExp.$1.replace(/^\S/, s => s.toLowerCase());
+            this.root.addEventListener(eventName, value);
+        }
     }
 
     mountTo(parent){
