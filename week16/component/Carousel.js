@@ -48,14 +48,15 @@ export class Carousel{
             }
             
             let onPanend = event => {
- 
+
                 let dirction = 0;
                 let {startX, clientX} = event.detail;
                 let dx = clientX - startX;
-
-                if(dx + offset > 250){
+                if(dx + offset > 250 || event.detail.isFlick && dx > 0){
+                    //慢速向右拖动超过250像素，或者快速拖动且方向是右
                     dirction = 1;
-                }else if(dx + offset < -250){
+                }else if(dx + offset < -250 || event.detail.isFlick && dx < 0){ 
+                    //慢速向左拖动超过250像素，或者快速拖动且方向是左
                     dirction = -1;
                 }
                 this.Timeline.reset();
