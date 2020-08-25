@@ -1,0 +1,25 @@
+{
+  "name": "watcher",
+  "version": "1.0.0",
+  "main": "watcher.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack" : "webpack", 
+    "dev": "npm run webpack -- --mode development --watch",
+    "build": "npm run webpack -- --mode production"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "chokidar": "^3.4.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  }
+}

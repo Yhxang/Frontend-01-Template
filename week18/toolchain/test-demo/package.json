@@ -1,0 +1,47 @@
+{
+  "name": "test-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "mocha -r esm --watch",
+    "test": "nyc mocha -r esm",
+    "coverage": "npm run test && http-server coverage/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@ava/babel": "^1.0.1",
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
+    "@istanbuljs/nyc-config-babel": "^3.0.0",
+    "ava": "^3.11.1",
+    "babel-loader": "^8.1.0",
+    "babel-plugin-istanbul": "^6.0.0",
+    "esm": "^3.2.25",
+    "http-server": "^0.12.3",
+    "mocha": "^8.1.1",
+    "webpack": "^4.44.1"
+  },
+  "dependencies": {
+    "nyc": "^15.1.0"
+  },
+  "ava": {
+    "files": [
+      "test/*.js"
+    ],
+    "require": [
+      "@babel/register"
+    ],
+    "babel": {
+      "testOptions": {
+        "babelrc": true
+      }
+    }
+  },
+  "esm": {
+    "cjs": true
+  }
+}
